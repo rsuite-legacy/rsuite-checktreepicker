@@ -76,7 +76,7 @@ class App extends Component {
 
               <h5 id="disabled"><code>禁用组件</code></h5>
               <div className="example-item">
-                <DisabledPicker />
+                {<DisabledPicker />}
               </div>
               <CodeComponent md={require('./md/Disabled.md')} />
               <br />

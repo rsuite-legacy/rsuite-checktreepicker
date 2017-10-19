@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import RsuiteCheckTreePicker from '../../src';
 import treeData from '../data/treeData';
 
-class Demo extends Component {
+class DisabledPicker extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,4 +29,4 @@ class Demo extends Component {
   }
 }
 
-export default Demo;
+export default DisabledPicker;

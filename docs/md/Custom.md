@@ -1,18 +1,19 @@
 ```js
 import React, { Component } from 'react';
-import RsuiteCheckTreePicker from '../../src';
+import RsuiteCheckTreePicker from 'rsuite-checktreepicker';
 import treeData from '../data/treeData';
 
-class Demo extends Component {
+class CustomPicker extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: treeData,
+      selectedValues: ['Dave', 'Maya']
     };
   }
 
   render() {
-    const { data } = this.state;
+    const { data, selectedValues } = this.state;
     return (
       <div>
         <RsuiteCheckTreePicker
@@ -38,6 +39,6 @@ class Demo extends Component {
   }
 }
 
-export default Demo;
+export default CustomPicker;
 
 ```

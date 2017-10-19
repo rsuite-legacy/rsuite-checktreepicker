@@ -33,6 +33,9 @@
       .button-ripple('background-color .3s linear, border .0s linear');
     }
     &.expand {
+      .dropdown{
+        display: block;
+      }
       .expand();
       .rsuite-checktreepicker-toggle-arrow {
         border-color: @arrow-color transparent transparent;
@@ -50,6 +53,7 @@
       .clearfix;
     }
     .dropdown {
+      display: none;
       .box-shadow();
       background-color: @container-bg;
       border: @container-border;

@@ -90,12 +90,6 @@ class Dropdown extends Component {
     this.isMounted = false;
   }
 
-  getValue() {
-    const { value } = this.props;
-    const nextValue = _.isUndefined(value) ? this.state.value : value;
-    return _.clone(nextValue) || [];
-  }
-
   get isMounted() {
     return this.mounted;
   }
@@ -217,7 +211,17 @@ class Dropdown extends Component {
     });
   }
 
+  handleDidMount = (values) => {
+    const { didMount } = this.props;
+    this.setState({
+      value: values
+    });
+
+    didMount && didMount(values);
+  }
+
   renderDropdownMenu() {
+    const { expand } = this.state;
     const { value, data, dropup } = this.state;
     const {
       labelKey,
@@ -242,6 +246,7 @@ class Dropdown extends Component {
         onChange={this.handleOnChange}
         onSelect={this.handleSelect}
         onExpand={this.handleExpand}
+        didMount={this.handleDidMount}
       />
     );
 
@@ -319,7 +324,7 @@ class Dropdown extends Component {
           >
             {placeholderText}
           </DropdownToggle>
-          {expand && this.renderDropdownMenu()}
+          {this.renderDropdownMenu()}
         </div>
       </IntlProvider>
     );
