@@ -23,7 +23,9 @@ const propTypes = {
   placeholder: PropTypes.string,
   searchable: PropTypes.bool,
   onSearch: PropTypes.func,
-  onToggle: PropTypes.func
+  onToggle: PropTypes.func,
+  didMount: PropTypes.func,
+  renderPlaceholder: PropTypes.func
 };
 
 const defaultProps = {

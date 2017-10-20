@@ -24,6 +24,7 @@ onExpand             | function(activeNode, layer)         |         | 树节点
 onSelect             | function(activeNode, layer, values)       |         | 选择树节点后的回调函数
 renderTreeNode       | function(nodeData)         |         | 自定义渲染 tree 节点
 renderTreeIcon       | function(nodeData)         |         | 自定义渲染 图标
+renderPlaceholder    | function(value, checkItem, placeholder) | 自定义渲染placeholder
 didMount             | function(values) |         |         | componentDidMount 周期完成时回调函数
 
 
