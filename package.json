@@ -1,6 +1,6 @@
 {
   "name": "rsuite-checktreepicker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Rsuite Check Tree Picker",
   "main": "lib/index.js",
   "directories": {

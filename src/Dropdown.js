@@ -51,6 +51,7 @@ class Dropdown extends Component {
       value,
       expand,
       searchKeyword: '',
+      filterData: this.getFilterData()
     };
   }
 
@@ -68,7 +69,6 @@ class Dropdown extends Component {
       this.setState({
         dropup,
         value,
-        data
       });
     }
   }
@@ -100,8 +100,12 @@ class Dropdown extends Component {
     this.mounted = isMounted;
   }
 
-  shouldDisplay(label) {
-    const { searchKeyword } = this.state;
+  getFilterData(searchKeyword = '') {
+    const { data, labelKey } = this.props;
+    return filterNodesOfTree(data, item => this.shouldDisplay(item[labelKey], searchKeyword));
+  }
+
+  shouldDisplay(label, searchKeyword) {
     if (!_.trim(searchKeyword)) {
       return true;
     }
@@ -201,13 +205,14 @@ class Dropdown extends Component {
     onToggle && onToggle(e);
   }
 
-  handleSearch = (value, e) => {
+  handleSearch = (value) => {
     this.setState({
-      searchKeyword: value
+      searchKeyword: value,
+      filterData: this.getFilterData(value)
     });
   }
 
-  handleClean = (e) => {
+  handleClean = () => {
     this.setState({
       value: []
     });
@@ -223,17 +228,15 @@ class Dropdown extends Component {
   }
 
   renderDropdownMenu() {
-    const { expand } = this.state;
-    const { value, data, dropup } = this.state;
+    const { filterData, value, dropup } = this.state;
     const {
-      labelKey,
       searchable
     } = this.props;
     const classes = classNames('dropdown', {
       'menu-dropup': dropup,
     });
 
-    const filterData = filterNodesOfTree(data, item => this.shouldDisplay(item[labelKey]));
+    // const filterData = filterNodesOfTree(data, item => this.shouldDisplay(item[labelKey]));
     const menuProps = _.pick(this.props, Object.keys(CheckTree.propTypes));
 
     const dropdownMenu = (
