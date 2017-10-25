@@ -1,7 +1,5 @@
-/*! Last update: Mon Oct 23 2017 09:57:48 GMT+0800 (CST) */
+/*! Last update: Wed Oct 25 2017 09:54:14 GMT+0800 (CST) */
 @charset "utf-8";
-/**灰色色阶为公用颜色**/
-/**主题**/
 .tree-view {
   position: relative;
   padding: 18px;
@@ -15,11 +13,11 @@
   cursor: pointer;
 }
 .tree-view .tree-node:focus {
-  background: #eaf6fc;
-  outline: #155471 dotted thin;
+  background: #e6f8fb;
+  outline: #005e6a dotted thin;
 }
 .tree-view .tree-node.active {
-  color: #29a7e1;
+  color: #00bcd4;
 }
 .tree-view .tree-node.disabled {
   color: #b5b5b5;
@@ -89,7 +87,7 @@
   filter: alpha(opacity=0);
   font-family: RSuiteIconFont;
   content: "\F00C";
-  color: #29a7e1;
+  color: #00bcd4;
   position: absolute;
   left: 17px;
   top: 1px;
@@ -306,12 +304,12 @@
 }
 .rsuite-checktreepicker-dropdown .menu-item:hover,
 .rsuite-checktreepicker-dropdown .menu-item:focus {
-  background-color: #eaf6fc;
+  background-color: #e6f8fb;
   color: #575757;
 }
 .rsuite-checktreepicker-dropdown .menu-item.hover {
-  box-shadow: 0px 0px 2px #155471;
-  background-color: #eaf6fc;
+  box-shadow: 0px 0px 2px #005e6a;
+  background-color: #e6f8fb;
   border-collapse: separate;
 }
 .rsuite-checktreepicker-dropdown .menu-item.active .menu-item-checkbox::after {
@@ -340,7 +338,7 @@
 .rsuite-checktreepicker-dropdown .menu-item .menu-item-checkbox::after {
   font-family: RSuiteIconFont;
   content: "\F00C";
-  color: #29a7e1;
+  color: #00bcd4;
   position: absolute;
   top: -2px;
   left: 0;
