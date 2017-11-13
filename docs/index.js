@@ -85,6 +85,8 @@ class App extends Component {
               <div className="example-item">
                 {<CustomPicker />}
               </div>
+              <br/>
+              <p>使用自定义 Placeholder的方法，必须要将组件设置为受控组件</p>
               <CodeComponent md={require('./md/Custom.md')} />
               <br />
               <h5 id="more"><code>更多用法</code></h5>

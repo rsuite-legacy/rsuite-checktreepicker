@@ -11,6 +11,12 @@ class SimplePicker extends Component {
     };
   }
 
+  handleOnChange = (values) => {
+    this.setState({
+      selectedValues: values
+    });
+  }
+
   render() {
     const { data, selectedValues } = this.state;
     return (
@@ -22,7 +28,6 @@ class SimplePicker extends Component {
           onSelect={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}
-          onChange={this.handleOnChange}
         />
         <br />
         <RsuiteCheckTreePicker

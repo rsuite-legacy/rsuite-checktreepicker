@@ -12,6 +12,12 @@ class CustomPicker extends Component {
     };
   }
 
+  handleOnChange = (values) => {
+    this.setState({
+      selectedValues: values
+    });
+  }
+
   render() {
     const { data, selectedValues } = this.state;
     return (
@@ -20,9 +26,11 @@ class CustomPicker extends Component {
           defaultExpandAll
           height={320}
           data={data}
+          value={selectedValues}
           onSelect={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}
+          onChange={this.handleOnChange}
           renderPlaceholder={(value, checkedItems, placeholder) => {
             if (!value.length) {
               return placeholder;
