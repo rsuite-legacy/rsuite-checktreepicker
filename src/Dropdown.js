@@ -51,7 +51,7 @@ class Dropdown extends Component {
       value,
       expand,
       searchKeyword: '',
-      filterData: this.getFilterData()
+      filterData: this.getFilterData('', data)
     };
   }
 
@@ -60,10 +60,15 @@ class Dropdown extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { searchKeyword } = this.state;
     const { value, data, dropup } = nextProps;
+    if (!_.isEqual(data, this.props.data)) {
+      this.setState({
+        filterData: this.getFilterData(searchKeyword, data)
+      });
+    }
     if (
       !_.isEqual(value, this.props.value) ||
-      !_.isEqual(data, this.props.data) ||
       !_.isEqual(dropup, this.props.dropup)
     ) {
       this.setState({
@@ -100,8 +105,8 @@ class Dropdown extends Component {
     this.mounted = isMounted;
   }
 
-  getFilterData(searchKeyword = '') {
-    const { data, labelKey } = this.props;
+  getFilterData(searchKeyword = '', data) {
+    const { labelKey } = this.props;
     return filterNodesOfTree(data, item => this.shouldDisplay(item[labelKey], searchKeyword));
   }
 
@@ -206,9 +211,10 @@ class Dropdown extends Component {
   }
 
   handleSearch = (value) => {
+    const { data } = this.props;
     this.setState({
       searchKeyword: value,
-      filterData: this.getFilterData(value)
+      filterData: this.getFilterData(value, data)
     });
   }
 
