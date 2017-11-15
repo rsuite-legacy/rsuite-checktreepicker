@@ -30,7 +30,7 @@
     "pages": "node docs/gh-pages.js",
     "prerelease": "npm run build",
     "release": "npm publish",
-    "test": "jest",
+    "test": "jest && codecov",
     "coverage": "jest --colors --coverage"
   },
   "repository": {

@@ -43,11 +43,28 @@ describe('rsutie-checktrepicker test suite', () => {
     expect(didMount.mock.calls[0][0].length).toBe(20);
   });
 
+
   it('when dropdown clicked, CheckTree Component should be render', () => {
     fullRender.find('.rsuite-checktreepicker-toggle').simulate('click');
     expect(fullRender.find('.dropdown').render().find('.tree-view').length).toBe(1);
-
   });
 
+  it('when input  test word, the tree should be filter 20 nodes  ', () => {
+    fullRender.find('.rsuite-checktreepicker-toggle').simulate('click');
+    const value = {
+      target: {
+        value: 'test'
+      }
+    };
+    fullRender.find('.search-bar-input').simulate('change', value);
+    expect(fullRender.find('.tree-node').length).toBe(14);
+
+    fullRender.find('.search-bar-input').simulate('change', {
+      target: {
+        value: ''
+      }
+    });
+    expect(fullRender.find('.tree-node').length).toBe(31);
+  });
 });
 
