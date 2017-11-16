@@ -11,6 +11,10 @@ env:
 
 script:
   - npm run test
+
+after_script:
+  - npm run coveralls
+
 branches:
   only:
     - master
