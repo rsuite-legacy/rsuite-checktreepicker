@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow, render, mount } from 'enzyme';
-import cloneDeep from 'lodash/cloneDeep';
 import Picker from '../src/index';
 import treeData from '../docs/data/treeData';
 import { delay } from './utils';
@@ -35,12 +34,15 @@ const setup = () => {
 describe('ChectTree test suite', () => {
   const { staticRender, fullRender } = setup();
   // test select node`
-  it('test toggle click Dave node', () => {
+  it('test toggle click Dave node', async () => {
     fullRender.find('.rsuite-checktreepicker-toggle').simulate('click');
     expect(fullRender.find('.tree-node.checked').length).toBe(12);
 
     fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
-    expect(fullRender.find('.tree-node.checked').length).toBe(0);
+    fullRender.setProps({
+      value: mockOnChange.mock.calls[0][0]
+    });
+    expect(fullRender.find('.tree-view').render().find('.tree-node.checked').length).toBe(0);
   });
 
   // test expand node
