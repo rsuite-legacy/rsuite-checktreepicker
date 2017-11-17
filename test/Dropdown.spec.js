@@ -46,7 +46,14 @@ describe('rsutie-checktrepicker test suite', () => {
 
   it('when dropdown clicked, CheckTree Component should be render', () => {
     fullRender.find('.rsuite-checktreepicker-toggle').simulate('click');
-    expect(fullRender.find('.dropdown').render().find('.tree-view').length).toBe(1);
+    expect(fullRender.find('.rsuite-checktreepicker-dropdown.expand').length).toBe(1);
+  });
+
+
+  it('when click document, Tree Component should be hide', () => {
+    expect(fullRender.find('.rsuite-checktreepicker-dropdown.expand').length).toBe(1);
+    document.querySelector('body').click();
+    expect(fullRender.find('.expand').length).toBe(0);
   });
 
   it('when input  test word, the tree should be filter 20 nodes  ', () => {
@@ -65,6 +72,26 @@ describe('rsutie-checktrepicker test suite', () => {
       }
     });
     expect(fullRender.find('.tree-node').length).toBe(31);
+  });
+
+  it('when disabled is true, Dropdown should be disabled. And exists class `.disabled`', () => {
+    const props = {
+      data: treeData,
+      value: ['Master'],
+      disabled: true
+    };
+    const picker = mount(<Picker {...props} />);
+    expect(picker.find('.rsuite-checktreepicker-dropdown.disabled').length).toBe(1);
+  });
+
+  it('when dropup is true, Dropdown exists class `.dropdown.menu-dropup`', () => {
+    const props = {
+      data: treeData,
+      value: ['Master'],
+      dropup: true
+    };
+    const picker = mount(<Picker {...props} />);
+    expect(picker.find('.dropdown.menu-dropup').length).toBe(1);
   });
 });
 
