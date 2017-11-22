@@ -1,4 +1,4 @@
-/*! Last update: Wed Nov 22 2017 14:24:30 GMT+0800 (CST) */
+/*! Last update: Wed Nov 22 2017 17:24:59 GMT+0800 (CST) */
 @charset "utf-8";
 .tree-view {
   position: relative;
@@ -155,6 +155,9 @@
 .rsuite-checktreepicker {
   /* settings */
 }
+.rsuite-checktreepicker-dropup .rsuite-selectpicker-toggle-arrow::before {
+  content: "\F106";
+}
 .rsuite-checktreepicker-dropdown {
   position: relative;
   box-sizing: border-box;
@@ -210,13 +213,9 @@
   padding: 8px 26px 7px 18px;
 }
 .rsuite-checktreepicker-dropdown.expand.rsuite-checktreepicker-dropup .rsuite-checktreepicker-toggle-arrow {
-  top: 15px;
+  top: 9px;
   border-color: transparent transparent #575757;
   border-width: 4px;
-}
-.rsuite-checktreepicker-dropdown.expand .rsuite-checktreepicker-toggle-arrow {
-  border-color: #575757 transparent transparent;
-  border-width: 4px 4px 0;
 }
 .rsuite-checktreepicker-dropdown-menu {
   overflow: auto;
@@ -365,7 +364,7 @@
   content: '';
   display: block;
   position: absolute;
-  right: 17px;
+  right: 10px;
   top: 14px;
   border-color: #575757 transparent transparent;
   border-width: 4px 4px 0;
@@ -406,20 +405,32 @@
 }
 .rsuite-checktreepicker-toggle-arrow {
   content: '';
+  font-family: 'RSuiteIconFont';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  display: inline-block;
+  text-transform: none;
+  font-size: 14px;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 20px;
   display: block;
   position: absolute;
-  right: 17px;
-  top: 14px;
-  border-style: solid;
-  border-color: transparent #575757 transparent transparent;
-  border-width: 4px;
+  right: 10px;
+  top: 8px;
   transition: border 200ms;
+}
+.rsuite-checktreepicker-toggle-arrow::before {
+  content: "\F107";
 }
 .rsuite-checktreepicker-toggle-clean {
   position: absolute;
   opacity: 0;
   top: 50%;
-  right: 8px;
+  right: 7px;
   height: 20px;
   width: 20px;
   line-height: 20px;
