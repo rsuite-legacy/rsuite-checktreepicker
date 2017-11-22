@@ -11,7 +11,6 @@ import decorate from './utils/decorate';
 import reactToString from './utils/reactToString';
 import DropdownToggle from './DropdownToggle';
 import SearchBar from './SearchBar';
-import filterNodesOfTree from './utils/filterNodesOfTree';
 
 const propTypes = {
   ...CheckTree.propTypes,
@@ -107,7 +106,23 @@ class Dropdown extends Component {
 
   getFilterData(searchKeyword = '', data) {
     const { labelKey } = this.props;
-    return filterNodesOfTree(data, item => this.shouldDisplay(item[labelKey], searchKeyword));
+    const treeData = _.cloneDeep(data);
+    const setVisible = (nodes = []) => (
+      nodes.forEach((item) => {
+        item.visible = this.shouldDisplay(item[labelKey], searchKeyword);
+        if (_.isArray(item.children)) {
+          setVisible(item.children);
+          item.children.forEach((child) => {
+            if (child.visible) {
+              item.visible = child.visible;
+            }
+          });
+        }
+      })
+    );
+
+    setVisible(treeData);
+    return treeData;
   }
 
   shouldDisplay(label, searchKeyword) {
@@ -136,7 +151,7 @@ class Dropdown extends Component {
     this.docResizelListener && this.docClickListener.off();
   }
 
-  autoAdjustDropdownPosition = (e) => {
+  autoAdjustDropdownPosition = () => {
     const { height, dropup } = this.props;
     if (!this.isMounted) {
       return;

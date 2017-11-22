@@ -54,7 +54,7 @@
     "lodash": "^4.17.4",
     "prop-types": "^15.5.10",
     "react-addons-css-transition-group": "^15.6.0",
-    "rsuite-check-tree": "^0.2.2-beta.11",
+    "rsuite-check-tree": "^0.2.2-beta.12",
     "rsuite-intl": "^1.0.1"
   },
   "peerDependencies": {
@@ -105,7 +105,7 @@
     "react-test-renderer": "^16.0.0",
     "rsuite": "^2.0.0-beta.2",
     "rsuite-affix": "^1.0.3",
-    "rsuite-theme": "^2.0.0-beta.1-1",
+    "rsuite-theme": "^2.0.10",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.8",
     "uuid": "^2.0.3",
