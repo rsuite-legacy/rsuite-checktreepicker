@@ -7,8 +7,8 @@
   @container-padding-right: 26px;
   @container-padding-left: 18px;
   @arrow-color: #575757;
-  @arrow-right-spacing: 17px;
-  @arrow-top-spacing: 14px;
+  @arrow-right-spacing: 10px;
+  @arrow-top-spacing: 8px;
   @arrow-size: 4px;
   @dropdown-bg: @container-bg;
   @option-select-bg: @H500;
@@ -17,6 +17,26 @@
   @expand-border-color: #DCDCDC;
   @check-box-size: 17px;
   @check-box-fg: @H500;
+  .rusite-icon() {
+      font-family: 'RSuiteIconFont';
+      speak: none;
+      font-style: normal;
+      font-weight: normal;
+      font-variant: normal;
+      display: inline-block;
+      text-transform: none;
+      font-size: 14px;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    &-dropup {
+      .rsuite-selectpicker-toggle-arrow {
+        &::before {
+          content: "\F106";
+        }
+      }
+    }
   &-dropdown {
     position: relative;
     box-sizing: border-box;
@@ -37,10 +57,6 @@
         display: block;
       }
       .expand();
-      .rsuite-checktreepicker-toggle-arrow {
-        border-color: @arrow-color transparent transparent;
-        border-width: @arrow-size @arrow-size 0;
-      }
     }
     &-menu {
       ul {
@@ -172,8 +188,8 @@
           content: '';
           display: block;
           position: absolute;
-          right: @arrow-right-spacing;
-          top: @arrow-top-spacing;
+          right: 10px;
+          top: 14px;
           border-color: @arrow-color transparent transparent;
           border-width: @arrow-size @arrow-size 0;
           border-style: solid;
@@ -238,20 +254,22 @@
     }
     &-arrow {
       content: '';
+      .rusite-icon();
+      font-size: 20px;
       display: block;
       position: absolute;
       right: @arrow-right-spacing;
       top: @arrow-top-spacing;
-      border-style: solid;
-      border-color: transparent @arrow-color transparent transparent;
-      border-width: @arrow-size;
       transition: border 200ms;
+      &::before {
+          content: "\F107";
+        }
     }
     &-clean {
       position: absolute;
       opacity: 0;
       top: 50%;
-      right: 8px;
+      right: 7px;
       height: 20px;
       width: 20px;
       line-height: 20px;
