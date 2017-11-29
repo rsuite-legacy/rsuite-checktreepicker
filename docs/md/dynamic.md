@@ -1,16 +1,12 @@
+### 异步加载数据
+<!-- start-code -->
 ```js
-import React, { Component } from 'react';
-import _ from 'lodash';
-import RsuiteCheckTreePicker from 'rsuite-checktreepicker';
-import treeData from '../data/treeData';
-
-
 const newTreeData = [{
   value: 'children1',
   label: 'children1'
 }];
 
-class Dynamic extends Component {
+class Dynamic extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,7 +40,7 @@ class Dynamic extends Component {
 
   setLoading(activeNode, loading = true) {
     const { data } = this.state;
-    const nextTreeData = _.cloneDeep(data);
+    const nextTreeData = cloneDeep(data);
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node.value === activeNode.value) {
@@ -64,7 +60,7 @@ class Dynamic extends Component {
 
   loadData = (activeNode, layer) => {
     const { data } = this.state;
-    const nextTreeData = _.cloneDeep(data);
+    const nextTreeData = cloneDeep(data);
     return new Promise((resolve) => {
       setTimeout(() => {
         this.setTreeData(newTreeData, activeNode, layer, nextTreeData);
@@ -104,8 +100,8 @@ class Dynamic extends Component {
   render() {
     const { data, selectedValues } = this.state;
     return (
-      <div>
-        <RsuiteCheckTreePicker
+      <div className="example-item">
+        <Picker
           defaultExpandAll
           height={320}
           data={data}
@@ -122,6 +118,6 @@ class Dynamic extends Component {
   }
 }
 
-export default Dynamic;
-
+ReactDOM.render(<Dynamic/>)
 ```
+<!-- end-code -->

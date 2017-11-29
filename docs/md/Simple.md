@@ -1,9 +1,7 @@
+### 基本用法
+<!-- start-code -->
 ```js
-import React, { Component } from 'react';
-import RsuiteCheckTreePicker from 'rsuite-checktreepicker';
-import treeData from '../data/treeData';
-
-class SimplePicker extends Component {
+class SimplePicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,8 +19,8 @@ class SimplePicker extends Component {
   render() {
     const { data, selectedValues } = this.state;
     return (
-      <div>
-        <RsuiteCheckTreePicker
+      <div className="example-item">
+        <Picker
           defaultExpandAll
           height={320}
           data={data}
@@ -31,7 +29,7 @@ class SimplePicker extends Component {
           }}
         />
         <br />
-        <RsuiteCheckTreePicker
+        <Picker
           defaultExpandAll
           height={320}
           data={data}
@@ -46,7 +44,6 @@ class SimplePicker extends Component {
   }
 }
 
-
-export default SimplePicker;
-
+ReactDOM.render(<SimplePicker />)
 ```
+<!-- end-code -->

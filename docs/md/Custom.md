@@ -1,9 +1,7 @@
+### 自定义 Placeholder
+<!-- start-code -->
 ```js
-import React, { Component } from 'react';
-import RsuiteCheckTreePicker from 'rsuite-checktreepicker';
-import treeData from '../data/treeData';
-
-class CustomPicker extends Component {
+class CustomPicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,8 +19,8 @@ class CustomPicker extends Component {
   render() {
     const { data, selectedValues } = this.state;
     return (
-      <div>
-        <RsuiteCheckTreePicker
+      <div className="example-item">
+        <Picker
           defaultExpandAll
           height={320}
           data={data}
@@ -47,6 +45,8 @@ class CustomPicker extends Component {
   }
 }
 
-export default CustomPicker;
+ReactDOM.render(<CustomPicker/>)
 
 ```
+<!-- end-code -->
+* 使用自定义 Placeholder的方法，必须要将组件设置为受控组件

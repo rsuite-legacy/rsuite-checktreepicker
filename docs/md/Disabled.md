@@ -1,9 +1,8 @@
+### 禁用组件
+<!-- start-code -->
 ```js
-import React, { Component } from 'react';
-import RsuiteCheckTreePicker from 'rsuite-checktreepicker';
-import treeData from '../data/treeData';
 
-class DisabledPicker extends Component {
+class DisabledPicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -15,8 +14,8 @@ class DisabledPicker extends Component {
   render() {
     const { data, selectedValues } = this.state;
     return (
-      <div>
-        <RsuiteCheckTreePicker
+      <div className="example-item">
+        <Picker
           disabled
           defaultExpandAll
           height={320}
@@ -30,6 +29,7 @@ class DisabledPicker extends Component {
   }
 }
 
-export default DisabledPicker;
+ReactDOM.render(<DisabledPicker/>);
 
 ```
+<!-- end-code -->

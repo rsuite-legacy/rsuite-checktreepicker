@@ -3,17 +3,20 @@ import ReactDOM from 'react-dom';
 import { Markdown } from 'markdownloader';
 import { Header, Navbar, Nav, Row, Col } from 'rsuite';
 import Affix from 'rsuite-affix';
-import CodeComponent from './component/CodeComponent';
-import {
-  SimplePicker,
-  CustomPicker,
-  DisabledPicker,
-  DropupPicker,
-  Dynamic
-} from './component';
+import CodeView from 'react-code-view';
+import cloneDeep from 'lodash/cloneDeep';
+import 'react-code-view/lib/less/index.less';
 import './less/index.less';
 import '../src/less/index.less';
+import Picker from '../src';
+import treeData from './data/treeData';
 
+const babelOptions = {
+  presets: ['stage-0', 'react', 'es2015'],
+  plugins: [
+    'transform-class-properties'
+  ]
+};
 class App extends Component {
   render() {
     return (
@@ -58,44 +61,75 @@ class App extends Component {
               <Markdown>{require('../README.md')}</Markdown>
 
               <h2 id="examples"><code>示例</code></h2>
-              <h5 id="simple"><code>基本用法</code></h5>
-              <div className="example-item">
-                {<SimplePicker />}
-              </div>
-              <CodeComponent md={require('./md/Simple.md')} />
-              <br />
+              <hr id="" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/Simple.md')}
+                    dependencies={{
+                      treeData,
+                      Picker
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
 
-              <h5 id="dropup"><code>Dropup</code></h5>
-              <div className="example-item">
-                {<DropupPicker />}
-              </div>
-              <br />
-              <p>autoAdjustPosition 属性默认值为 true， 会自动根据当前 CheckPicker 的位置，自动调整是 dropdown 还是dropup。</p>
-              <p>如果配置手动配置 dropup 属性为 ture, 则 CheckPicker 只会向上展开。</p>
-              <CodeComponent md={require('./md/Dropup.md')} />
-              <br />
+              <hr id="dropup" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/Dropup.md')}
+                    dependencies={{
+                      treeData,
+                      Picker
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
 
-              <h5 id="disabled"><code>禁用组件</code></h5>
-              <div className="example-item">
-                {<DisabledPicker />}
-              </div>
-              <CodeComponent md={require('./md/Disabled.md')} />
-              <br />
+              <hr id="disabled" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/Disabled.md')}
+                    dependencies={{
+                      treeData,
+                      Picker
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
 
-              <h5 id="custom"><code>自定义 Placeholder</code></h5>
-              <div className="example-item">
-                {<CustomPicker />}
-              </div>
-              <br />
-              <p>使用自定义 Placeholder的方法，必须要将组件设置为受控组件</p>
-              <CodeComponent md={require('./md/Custom.md')} />
-              <br />
-              <h5 id="custom"><code>动态加载</code></h5>
-              <div className="example-item">
-                {<Dynamic />}
-              </div>
-              <CodeComponent md={require('./md/Custom.md')} />
-              <br />
+              <hr id="custom" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/Custom.md')}
+                    dependencies={{
+                      treeData,
+                      Picker
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
+              <hr id="dynamic" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/dynamic.md')}
+                    dependencies={{
+                      treeData,
+                      Picker,
+                      cloneDeep
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
               <h5 id="more"><code>更多用法</code></h5>
               <p>因为 rsuite-checktreepicker 是由 rsuite-check-tree 封装而来，所以 rsuite-check-tree 的所有用法都适用于 rsuite-checktreepicker</p>
               <p>更多用法请参照 <a href="https://rsuitejs.com/rsuite-check-tree/">rsuite-checkt-tree</a>。</p>
