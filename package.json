@@ -107,6 +107,7 @@
     "react-test-renderer": "^16.0.0",
     "rsuite": "^2.0.0-beta.2",
     "rsuite-affix": "^1.0.3",
+    "rsuite-docs": "^0.1.11",
     "rsuite-theme": "^2.0.10",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.8",

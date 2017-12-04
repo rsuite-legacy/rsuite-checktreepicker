@@ -4,19 +4,17 @@
 # rsuite-checktreepicker
 基于 [rsuite-check-tree](https://rsuitejs.com/rsuite-check-tree/) 封装的 Picker。
 ## 快速开始
-安装
+### 安装
 
 ```bash
 npm install rsuite-checktreepicker --save
 ```
 
-用法
-
-引入 less 文件
+### 引入 less 文件
 ```
 @import "~rsuite-checktreepicker/lib/less/index";
 ```
-
+### 基本示例
 ```jsx
     <RsuiteCheckTreePicker
         defaultExpandAll
