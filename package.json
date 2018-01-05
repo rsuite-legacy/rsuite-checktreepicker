@@ -54,7 +54,7 @@
     "lodash": "^4.17.4",
     "prop-types": "^15.5.10",
     "react-addons-css-transition-group": "^15.6.0",
-    "rsuite-check-tree": "^0.2.2-beta.12",
+    "rsuite-check-tree": "3.0.0-next.1",
     "rsuite-intl": "^1.0.1"
   },
   "peerDependencies": {
