@@ -1,20 +1,29 @@
-### 非受控组件
+### inline 模式
+设置 `inline` 属性，就能当做 `check tree` 使用。
 <!-- start-code -->
 ```js
-class SimplePicker extends React.Component {
+class InlinePicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: treeData,
+      selectedValues: ['Master', 'Maya']
     };
+  }
+
+  handleOnChange = (values) => {
+    this.setState({
+      selectedValues: values
+    });
   }
 
   render() {
     const { data, selectedValues } = this.state;
     return (
-      <div className="example-item">
+      <div className="">
         <Picker
           defaultExpandAll
+          inline
           height={320}
           data={data}
           onSelect={(activeNode, layer) => {
@@ -26,6 +35,6 @@ class SimplePicker extends React.Component {
   }
 }
 
-ReactDOM.render(<SimplePicker />)
+ReactDOM.render(<InlinePicker />)
 ```
 <!-- end-code -->

@@ -1,34 +1,40 @@
-### Dropup
+### 受控组件
 <!-- start-code -->
 ```js
-class DropupPicker extends React.Component {
+class SimplePicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: treeData,
+      selectedValues: ['Master', 'Maya']
     };
   }
 
+  handleOnChange = (values) => {
+    this.setState({
+      selectedValues: values
+    });
+  }
+
   render() {
-    const { data } = this.state;
+    const { data, selectedValues } = this.state;
     return (
       <div className="example-item">
         <Picker
-          dropup
           defaultExpandAll
           height={320}
           data={data}
+          value={selectedValues}
           onSelect={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}
+          onChange={this.handleOnChange}
         />
       </div>
     );
   }
 }
 
-ReactDOM.render(<DropupPicker/>)
+ReactDOM.render(<SimplePicker />)
 ```
 <!-- end-code -->
-* autoAdjustPosition 属性默认值为 true， 会自动根据当前 CheckPicker 的位置，自动调整是 dropdown 还是dropup。
-* 如果配置手动配置 dropup 属性为 ture, 则 CheckPicker 只会向上展。

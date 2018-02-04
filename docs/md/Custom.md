@@ -29,7 +29,7 @@ class CustomPicker extends React.Component {
             console.log(activeNode, layer);
           }}
           onChange={this.handleOnChange}
-          renderPlaceholder={(value, checkedItems, placeholder) => {
+          renderValue={(value, checkedItems, placeholder) => {
             if (!value.length) {
               return placeholder;
             }

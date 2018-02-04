@@ -121,3 +121,4 @@ class Dynamic extends React.Component {
 ReactDOM.render(<Dynamic/>)
 ```
 <!-- end-code -->
+>注意：在使用动态加载数据时，应当注意对 data 进行 深拷贝后再出入到 check-tree 组件中。如示例当中的，使用 _.cloneDeep() 对原始 data 进行深拷贝后再进行操作

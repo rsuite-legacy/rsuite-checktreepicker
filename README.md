@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/rsuite/rsuite-checktreepicker/badge.svg?branch=master)](https://coveralls.io/github/rsuite/rsuite-checktreepicker?branch=master)
 
 # rsuite-checktreepicker
-基于 [rsuite-check-tree](https://rsuitejs.com/rsuite-check-tree/) 封装的 Picker。
+
 ## 快速开始
 ### 安装
 
