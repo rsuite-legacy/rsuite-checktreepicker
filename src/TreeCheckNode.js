@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
 import { CHECK_STATE } from './constants';
 
-type CheckState = 'checked' | 'halfChecked' | 'unchecked';
+type CheckState = CHECK_STATE.UNCHECK | CHECK_STATE.HALFCHECK | CHECK_STATE.CHECK;
 type DefaultEvent = SyntheticEvent<*>;
 
 type Props = {
