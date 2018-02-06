@@ -17,15 +17,27 @@ disabled | bool | false | 是否禁用 Picker
 seasrchable | bool | true | 是否可以清楚
 seasrchable | bool | true | 是否显示搜索框
 onSearch | function(searchKeyword, event) || 搜索回调函数
-onToggle | function() | |展开 Dropdown 的回调函数
+onOpen | function() | |展开 Dropdown 的回调函数
+onClose | function() | |关闭 Dropdown 的回调函数
 onChange             | function(values)         |         | 数据改变的回调函数
 onExpand             | function(activeNode, layer)         |         | 树节点展示时的回调
 onSelect             | function(activeNode, layer, values)       |         | 选择树节点后的回调函数
 renderTreeNode       | function(nodeData)         |         | 自定义渲染 tree 节点
 renderTreeIcon       | function(nodeData)         |         | 自定义渲染 图标
-renderValue    | function(value, checkItem, placeholder) | |自定义渲染placeholder
-renderExtraFooter    | function(value, checkItem, placeholder) | |自定义渲染placeholder
+renderValue    | function(values, checkItems, placeholder)| |自定义渲染placeholder
+renderExtraFooter | ()=>React.Node | | 自定义页脚内容
+placement | enum: Placement | `bottomLeft` | 打开位置
 
+<br/>
+`Placement` 取值如下：
+- `bottomLeft`
+- `bottomRight`
+- `leftBottom`
+- `rightBottom`
+- `topLeft`
+- `topRight`
+- `leftTop`
+- `rightTop`
 
 
 

@@ -121,19 +121,6 @@ class App extends Component {
               />
             </Col>
           </Row>
-          <h5 id="more">
-            <code>更多用法</code>
-          </h5>
-          <p>
-            因为 rsuite-checktreepicker 是由 rsuite-check-tree 封装而来，所以
-            rsuite-check-tree 的所有用法都适用于 rsuite-checktreepicker
-          </p>
-          <p>
-            更多用法请参照{' '}
-            <a href="https://rsuitejs.com/rsuite-check-tree/">
-              rsuite-checkt-tree
-            </a>。
-          </p>
           <h2 id="API">API</h2>
           <Markdown>{require('./md/props.md')}</Markdown>
         </Col>
