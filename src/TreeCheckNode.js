@@ -1,43 +1,45 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
 import { CHECK_STATE } from './constants';
 
-const propTypes = {
-  visible: PropTypes.bool,
-  label: PropTypes.any,        // eslint-disable-line react/forbid-prop-types
-  nodeData: PropTypes.object,  // eslint-disable-line react/forbid-prop-types
-  active: PropTypes.bool,
-  checkState: PropTypes.oneOf([CHECK_STATE.CHECK, CHECK_STATE.HALFCHECK, CHECK_STATE.UNCHECK]),
-  hasChildren: PropTypes.bool,
-  labelClickableExpand: PropTypes.bool,
-  disabled: PropTypes.bool,
-  layer: PropTypes.number,
-  onTreeToggle: PropTypes.func,
-  onSelect: PropTypes.func,
-  onRenderTreeIcon: PropTypes.func,
-  onRenderTreeNode: PropTypes.func,
-  onKeyDown: PropTypes.func,
+type CheckState = 'checked' | 'halfChecked' | 'unchecked';
+type DefaultEvent = SyntheticEvent<*>;
+
+type Props = {
+  visible?: boolean,
+  label?: any,
+  nodeData: Object,
+  active?: boolean,
+  checkState?: CheckState,
+  hasChildren?: boolean,
+  labelClickableExpand?: boolean,
+  disabled?: boolean,
+  layer: number,
+  onTreeToggle?: (nodeData: Object, layer: number, event: DefaultEvent) => void,
+  onSelect?: (nodeData: Object, layer: number, event: DefaultEvent) => void,
+  onRenderTreeIcon?: (nodeData: Object) => React.Node,
+  onRenderTreeNode?: (nodeData: Object) => React.Node,
+  onKeyDown?: (event: SyntheticKeyboardEvent<*>) => void,
 };
 
-const defaultProps = {
-  visible: true,
-};
-
-class TreeCheckNode extends Component {
+class TreeCheckNode extends React.Component<Props> {
+  static defaultProps = {
+    visible: true,
+  };
   /**
-      * 展开收缩节点
-      */
-  handleTreeToggle = (event) => {
+   * 展开收缩节点
+   */
+  handleTreeToggle = (event: DefaultEvent) => {
     const { labelClickableExpand, onTreeToggle, layer, nodeData } = this.props;
     if (labelClickableExpand) {
       return;
     }
-    onTreeToggle(nodeData, layer, event);
-  }
+    onTreeToggle && onTreeToggle(nodeData, layer, event);
+  };
 
-  handleSelect = (event) => {
+  handleSelect = (event: DefaultEvent) => {
     const {
       onTreeToggle,
       onSelect,
@@ -46,23 +48,30 @@ class TreeCheckNode extends Component {
       layer,
       disabled,
       nodeData,
-      checkState
-      } = this.props;
+      checkState,
+    } = this.props;
 
     if (disabled) {
       return;
     }
 
     // 如果点击的是展开 icon 就 return
-    if (hasClass(event.target.parentNode, 'expand-icon-wrapper')) {
-      return;
+    if (event.target instanceof HTMLElement) {
+      if (hasClass(event.target.parentNode, 'expand-icon-wrapper')) {
+        return;
+      }
     }
 
     // 点击title的时候，如果 title 设置为可以点击，同时又拥有子节点，则可以展开数据
-    labelClickableExpand && hasChildren && onTreeToggle(nodeData, layer, event);
+    if (labelClickableExpand && hasChildren) {
+      onTreeToggle && onTreeToggle(nodeData, layer, event);
+    }
 
     let isChecked = false;
-    if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
+    if (
+      checkState === CHECK_STATE.UNCHECK ||
+      checkState === CHECK_STATE.HALFCHECK
+    ) {
       isChecked = true;
     }
 
@@ -70,13 +79,18 @@ class TreeCheckNode extends Component {
       isChecked = false;
     }
     nodeData.check = isChecked;
-    onSelect(nodeData, layer, event);
-  }
+    onSelect && onSelect(nodeData, layer, event);
+  };
 
   renderIcon = () => {
     const { onRenderTreeIcon, hasChildren, nodeData } = this.props;
 
-    const expandIcon = (typeof onRenderTreeIcon === 'function') ? onRenderTreeIcon(nodeData) : <i className="expand-icon icon" />;
+    const expandIcon =
+      typeof onRenderTreeIcon === 'function' ? (
+        onRenderTreeIcon(nodeData)
+      ) : (
+        <i className="expand-icon icon" />
+      );
     return hasChildren ? (
       <div
         role="button"
@@ -87,14 +101,20 @@ class TreeCheckNode extends Component {
         {expandIcon}
       </div>
     ) : null;
-  }
+  };
 
   renderLabel = () => {
     const { nodeData, onRenderTreeNode, label } = this.props;
-    let custom = (typeof onRenderTreeNode === 'function') ?
-      onRenderTreeNode(nodeData) : label;
-    return (<label className="checknode-label" title={label}>{custom}</label>);
-  }
+    let custom =
+      typeof onRenderTreeNode === 'function'
+        ? onRenderTreeNode(nodeData)
+        : label;
+    return (
+      <label className="checknode-label" title={label}>
+        {custom}
+      </label>
+    );
+  };
 
   render() {
     const {
@@ -116,7 +136,7 @@ class TreeCheckNode extends Component {
     });
 
     const styles = {
-      paddingLeft: layer * 20
+      paddingLeft: layer * 20,
     };
 
     return visible ? (
@@ -137,6 +157,4 @@ class TreeCheckNode extends Component {
   }
 }
 
-TreeCheckNode.propTypes = propTypes;
-TreeCheckNode.defaultProps = defaultProps;
 export default TreeCheckNode;

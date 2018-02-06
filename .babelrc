@@ -1,4 +1,13 @@
 {
-  "presets": ["es2015", "react", "stage-1"],
-  "plugins": ["transform-react-flow-handled-props"]
+  "presets": [
+    "es2015",
+    "react",
+    "stage-2",
+    "flow"
+  ],
+  "plugins": [
+    "transform-class-properties",
+    "flow-react-proptypes",
+    "transform-react-flow-handled-props"
+  ]
 }

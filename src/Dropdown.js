@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+// @flow
+
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { toggleClass, hasClass } from 'dom-lib';
@@ -24,73 +26,82 @@ import defaultLocale from './locale/index';
 import { CHECK_STATE } from './constants';
 
 const { namespace } = constants;
-const propTypes = {
-  height: PropTypes.number,
-  data: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
-  /**
-   * 是否级联选择
-   */
-  cascade: PropTypes.bool,
-  // 是否只显示check-tree
-  inline: PropTypes.bool,
-  defaultValue: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  disabledItems: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  valueKey: PropTypes.string,
-  labelKey: PropTypes.string,
-  childrenKey: PropTypes.string,
-  defaultExpandAll: PropTypes.bool,
-  classPrefix: PropTypes.string,
-  disabled: PropTypes.bool,
-  open: PropTypes.bool,
-  defaultOpen: PropTypes.bool,
-  locale: PropTypes.object,
-  placeholder: PropTypes.string,
-  cleanable: PropTypes.bool,
-  searchable: PropTypes.bool,
-  onSearch: PropTypes.func,
-  onOpen: PropTypes.func,
-  onClose: PropTypes.func,
-  renderValue: PropTypes.func,
-  renderExtraFooter: PropTypes.func, // 自定义页脚内容
-  onChange: PropTypes.func,
-  onExpand: PropTypes.func,
-  onSelect: PropTypes.func,
-  onScroll: PropTypes.func,
-  renderTreeNode: PropTypes.func,
-  renderTreeIcon: PropTypes.func,
-  placement: PropTypes.oneOf([
-    'bottomLeft',
-    'bottomRight',
-    'topLeft',
-    'topRight',
-    'leftTop',
-    'rightTop',
-    'leftBottom',
-    'rightBottom',
-  ]),
+
+type DefaultEvent = SyntheticEvent<*>;
+type PlacementEighPoints =
+  | 'bottomLeft'
+  | 'bottomRight'
+  | 'topLeft'
+  | 'topRight'
+  | 'leftTop'
+  | 'rightTop'
+  | 'leftBottom'
+  | 'rightBottom';
+
+type Props = {
+  className?: string,
+  height?: number,
+  data: Array<any>,
+  defaultValue?: any,
+  value?: Array<any>,
+  disabledItems?: Array<any>,
+  valueKey?: string,
+  labelKey?: string,
+  childrenKey?: string,
+  cascade: boolean,
+  defaultExpandAll?: boolean,
+  inline?: boolean,
+  classPrefix?: string,
+  disabled?: boolean,
+  open?: boolean,
+  defaultOpen?: boolean,
+  locale?: Object,
+  placeholder?: string,
+  cleanable?: boolean,
+  searchable?: boolean,
+  onSearch?: (searchKeyword: string, event: DefaultEvent) => void,
+  onOpen?: () => void,
+  onClose?: () => void,
+  onChange?: (values: any) => void,
+  onExpand?: (activeNode: any, labyer: number) => void,
+  onSelect?: (activeNode: any, layer: number, values: any) => void,
+  onScroll?: (event: DefaultEvent) => void,
+  renderTreeNode?: (nodeData: Object) => React.Node,
+  renderTreeIcon?: (nodeData: Object) => React.Node,
+  renderValue?: (
+    values: Array<any>,
+    checkItems: Array<any>,
+    placeholder: string | React.Node,
+  ) => React.Node,
+  renderExtraFooter?: () => React.Node,
+  placement?: PlacementEighPoints,
 };
 
-const defaultProps = {
-  classPrefix: `${namespace}-checktree`,
-  inline: false,
-  cascade: true,
-  value: [],
-  disabled: PropTypes.false,
-  disabledItems: [],
-  expand: false,
-  locale: defaultLocale,
-  autoAdjustPosition: true,
-  cleanable: true,
-  searchable: true,
-  valueKey: 'value',
-  labelKey: 'label',
-  childrenKey: 'children',
-  placeholder: 'placeholder',
+type State = {
+  formattedNodes: Array<any>,
+  selectedValues: Array<any>,
+  searchKeyword: string,
+  data: Array<any>,
 };
-
-class Dropdown extends Component {
-  constructor(props) {
+class Dropdown extends React.Component<Props, State> {
+  static defaultProps = {
+    classPrefix: `${namespace}-checktree`,
+    inline: false,
+    cascade: true,
+    value: [],
+    disabled: PropTypes.false,
+    disabledItems: [],
+    expand: false,
+    locale: defaultLocale,
+    autoAdjustPosition: true,
+    cleanable: true,
+    searchable: true,
+    valueKey: 'value',
+    labelKey: 'label',
+    childrenKey: 'children',
+    placeholder: 'placeholder',
+  };
+  constructor(props: Props) {
     super(props);
     this.nodes = {};
     this.isControlled =
@@ -112,7 +123,7 @@ class Dropdown extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     const { searchKeyword } = this.state;
     const { value, data } = nextProps;
     // if (!_.isEqual(data, this.props.data)) {
@@ -136,7 +147,7 @@ class Dropdown extends Component {
     }
   }
 
-  getNodeCheckState(node, cascade) {
+  getNodeCheckState(node: Object, cascade: boolean) {
     const { childrenKey } = this.props;
     if (!node[childrenKey] || !node[childrenKey].length || !cascade) {
       return node.check ? CHECK_STATE.CHECK : CHECK_STATE.UNCHECK;
@@ -153,7 +164,7 @@ class Dropdown extends Component {
     return CHECK_STATE.UNCHECK;
   }
 
-  getExpandState(node) {
+  getExpandState(node: Object) {
     const { childrenKey, defaultExpandAll } = this.props;
     if (node[childrenKey] && node[childrenKey].length) {
       if ('expand' in node) {
@@ -166,15 +177,15 @@ class Dropdown extends Component {
     return false;
   }
 
-  getFilterData(searchKeyword = '', data) {
+  getFilterData(searchKeyword: string = '', data: Array<any>) {
     const { labelKey } = this.props;
     const treeData = _.cloneDeep(data);
     const setVisible = (nodes = []) =>
-      nodes.forEach(item => {
+      nodes.forEach((item: Object) => {
         item.visible = this.shouldDisplay(item[labelKey], searchKeyword);
         if (_.isArray(item.children)) {
           setVisible(item.children);
-          item.children.forEach(child => {
+          item.children.forEach((child: Object) => {
             if (child.visible) {
               item.visible = child.visible;
             }
@@ -186,27 +197,30 @@ class Dropdown extends Component {
     return treeData;
   }
 
-  getActiveElementOption(options, refKey) {
+  getActiveElementOption(options: Array<any>, refKey: string) {
     for (let i = 0; i < options.length; i += 1) {
       if (options[i].refKey === refKey) {
         return options[i];
       } else if (options[i].children && options[i].children.length) {
         let active = this.getActiveElementOption(options[i].children, refKey);
-        if (active) {
+        if (!_.isEmpty(active)) {
           return active;
         }
       }
     }
-    return false;
+    return {};
   }
 
-  getElementByDataKey = dataKey => {
-    const ele = findDOMNode(this);
-    return ele.querySelector(`[data-key="${dataKey}"]`);
+  getElementByDataKey = (dataKey: string) => {
+    const ele: Element | null | Text = findDOMNode(this);
+    if (ele instanceof Element) {
+      return ele.querySelector(`[data-key="${dataKey}"]`);
+    }
+    return null;
   };
 
-  setChildCheckState(parentNode) {
-    Object.keys(this.nodes).forEach(refKey => {
+  setChildCheckState(parentNode: Object) {
+    Object.keys(this.nodes).forEach((refKey: string) => {
       const node = this.nodes[refKey];
       if (
         'parentNode' in node &&
@@ -216,25 +230,21 @@ class Dropdown extends Component {
       }
     });
   }
-  getFormattedNodes(nodes) {
-    return nodes.map(node => {
+  getFormattedNodes(nodes: Array<any>) {
+    return nodes.map((node: Object) => {
       const formatted = { ...node };
       formatted.check = this.nodes[node.refKey].check;
       formatted.expand = this.nodes[node.refKey].expand;
       if (Array.isArray(node.children) && node.children.length > 0) {
-        formatted.children = this.getFormattedNodes(
-          formatted.children,
-          formatted.check,
-        );
+        formatted.children = this.getFormattedNodes(formatted.children);
       }
-
       return formatted;
     });
   }
 
-  setCheckState(nodes) {
+  setCheckState(nodes: Array<any>) {
     const { cascade } = this.props;
-    nodes.forEach(node => {
+    nodes.forEach((node: Object) => {
       const checkState = this.getNodeCheckState(node, cascade);
       let isChecked = false;
       if (
@@ -257,14 +267,65 @@ class Dropdown extends Component {
    * 获取每个节点的disable状态
    * @param {*} node
    */
-  getDisabledState(node) {
-    const { disabledItems, valueKey } = this.props;
-    return disabledItems.some(value => {
-      return _.isEqual(this.nodes[node.refKey][valueKey], value);
+  getDisabledState(node: Object) {
+    const { disabledItems = [], valueKey } = this.props;
+    return disabledItems.some((value: any) =>
+      _.isEqual(this.nodes[node.refKey][valueKey], value),
+    );
+  }
+  getFocusableMenuItems = () => {
+    const { data, childrenKey } = this.props;
+
+    let items = [];
+    const loop = (treeNodes: Array<any>) => {
+      treeNodes.forEach((node: Object) => {
+        if (!this.getDisabledState(node)) {
+          items.push(node);
+          const nodeData = { ...node, ...this.nodes[node.refKey] };
+          if (!this.getExpandState(nodeData)) {
+            return;
+          }
+          if (node[childrenKey]) {
+            loop(node[childrenKey]);
+          }
+        }
+      });
+    };
+
+    loop(data);
+    return items;
+  };
+
+  getItemsAndActiveIndex() {
+    const items = this.getFocusableMenuItems();
+
+    let activeIndex = 0;
+    items.forEach((item, index) => {
+      if (document.activeElement !== null) {
+        if (item.refKey === document.activeElement.getAttribute('data-key')) {
+          activeIndex = index;
+        }
+      }
     });
+    return { items, activeIndex };
   }
 
-  shouldDisplay(label, searchKeyword) {
+  getActiveItem() {
+    const { data } = this.props;
+    const activeItem = document.activeElement;
+    if (activeItem !== null) {
+      const { key, layer } = activeItem.dataset;
+      const nodeData: Object = this.getActiveElementOption(data, key);
+      nodeData.check = !this.nodes[nodeData.refKey].check;
+      return {
+        nodeData,
+        layer,
+      };
+    }
+    return {};
+  }
+
+  shouldDisplay(label: any, searchKeyword: string) {
     if (!_.trim(searchKeyword)) {
       return true;
     }
@@ -283,18 +344,17 @@ class Dropdown extends Component {
     return false;
   }
 
-  isEveryChildChecked(node) {
-    return node.children.every(child => {
+  isEveryChildChecked(node: Object) {
+    return node.children.every((child: Object) => {
       if (child.children) {
         return this.isEveryChildChecked(child);
       }
-
       return child.check;
     });
   }
 
-  isSomeChildChecked(node) {
-    return node.children.some(child => {
+  isSomeChildChecked(node: Object) {
+    return node.children.some((child: Object) => {
       if (child.children) {
         return this.isSomeChildChecked(child);
       }
@@ -308,7 +368,7 @@ class Dropdown extends Component {
    * @param {*} nodes tree data
    * @param {*} ref 当前层级
    */
-  flattenNodes(nodes, ref = 0, parentNode) {
+  flattenNodes(nodes: Array<any>, ref?: string = '0', parentNode?: Object) {
     const { labelKey, valueKey, childrenKey } = this.props;
 
     if (!Array.isArray(nodes) || nodes.length === 0) {
@@ -329,11 +389,11 @@ class Dropdown extends Component {
     });
   }
 
-  serializeList(key) {
+  serializeList(key: string) {
     const { valueKey } = this.props;
     const list = [];
 
-    Object.keys(this.nodes).forEach(refKey => {
+    Object.keys(this.nodes).forEach((refKey: string) => {
       if (this.nodes[refKey][key]) {
         list.push(this.nodes[refKey][valueKey]);
       }
@@ -341,18 +401,18 @@ class Dropdown extends Component {
     return list;
   }
 
-  unserializeLists(lists) {
+  unserializeLists(lists: Object) {
     const { valueKey, cascade } = this.props;
     // Reset values to false
-    Object.keys(this.nodes).forEach(refKey => {
-      Object.keys(lists).forEach(listKey => {
+    Object.keys(this.nodes).forEach((refKey: string) => {
+      Object.keys(lists).forEach((listKey: string) => {
         const node = this.nodes[refKey];
         if (cascade && 'parentNode' in node) {
           node[listKey] = node.parentNode[listKey];
         } else {
           node[listKey] = false;
         }
-        lists[listKey].forEach(value => {
+        lists[listKey].forEach((value: any) => {
           if (_.isEqual(this.nodes[refKey][valueKey], value)) {
             this.nodes[refKey][listKey] = true;
           }
@@ -361,21 +421,19 @@ class Dropdown extends Component {
     });
   }
 
-  getActiveItem() {
-    const { data } = this.props;
-    const activeItem = document.activeElement;
-    const { key, layer } = activeItem.dataset;
-    const nodeData = this.getActiveElementOption(data, key);
-    nodeData.check = !this.nodes[nodeData.refKey].check;
-    return {
-      nodeData,
-      layer,
-    };
-  }
+  isControlled = null;
 
-  selectActiveItem = event => {
+  nodes = {};
+
+  treeView = null;
+
+  trigger = null;
+
+  container = null;
+
+  selectActiveItem = () => {
     const { nodeData, layer } = this.getActiveItem();
-    this.handleSelect(nodeData, +layer, event);
+    this.handleSelect(nodeData, +layer);
   };
 
   focusNextItem() {
@@ -384,48 +442,52 @@ class Dropdown extends Component {
       return;
     }
     const nextIndex = activeIndex === items.length - 1 ? 0 : activeIndex + 1;
-    this.getElementByDataKey(items[nextIndex].refKey).focus();
+    const node = this.getElementByDataKey(items[nextIndex].refKey);
+    if (node !== null) {
+      node.focus();
+    }
   }
 
   focusPreviousItem() {
     const { items, activeIndex } = this.getItemsAndActiveIndex();
-
     if (items.length === 0) {
       return;
     }
-
     const prevIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
-    this.getElementByDataKey(items[prevIndex].refKey).focus();
+    const node = this.getElementByDataKey(items[prevIndex].refKey);
+    if (node !== null) {
+      node.focus();
+    }
   }
 
-  toggleChecked(node, isChecked, cascade) {
+  toggleChecked(node: Object, isChecked: boolean, cascade: boolean) {
     const { childrenKey } = this.props;
     if (!node[childrenKey] || !node[childrenKey].length || !cascade) {
       this.toggleNode('check', node, isChecked);
     } else {
       this.toggleNode('check', node, isChecked);
-      node.children.forEach(child => {
+      node.children.forEach((child: Object) => {
         this.toggleChecked(child, isChecked, cascade);
       });
     }
   }
 
-  toggleNode(key, node, toggleValue) {
+  toggleNode(key: string, node: Object, toggleValue: boolean) {
     this.nodes[node.refKey][key] = toggleValue;
   }
 
-  toggleExpand(node, isExpand) {
+  toggleExpand(node: Object, isExpand: boolean) {
     this.nodes[node.refKey].expand = isExpand;
   }
 
-  addPrefix = name => prefix(this.props.classPrefix)(name);
+  addPrefix = (name: string) => prefix(this.props.classPrefix)(name);
 
   /**
    * 选择某个节点后的回调函数
    * @param {object} activeNodeData   节点的数据
    * @param {number} layer            节点的层级
    */
-  handleSelect = (activeNode, layer) => {
+  handleSelect = (activeNode: Object, layer: number) => {
     const { data } = this.state;
     const { onChange, onSelect, cascade } = this.props;
     this.toggleChecked(activeNode, activeNode.check, cascade);
@@ -457,7 +519,7 @@ class Dropdown extends Component {
   /**
    * 展开、收起节点
    */
-  handleToggle = (nodeData, layer) => {
+  handleToggle = (nodeData: Object, layer: number) => {
     const { onExpand } = this.props;
     toggleClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
     nodeData.expand = hasClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
@@ -468,7 +530,7 @@ class Dropdown extends Component {
   /**
    * 展开树节点后的回调函数
    */
-  handleExpand = (activeNode, layer) => {
+  handleExpand = (activeNode: Object, layer: number) => {
     const { onExpand } = this.props;
     onExpand && onExpand(activeNode, layer);
   };
@@ -476,7 +538,7 @@ class Dropdown extends Component {
   /**
    * 处理键盘方向键移动
    */
-  handleKeyDown = event => {
+  handleKeyDown = (event: SyntheticKeyboardEvent<*>) => {
     switch (event.keyCode) {
       // down
       case 40:
@@ -490,7 +552,7 @@ class Dropdown extends Component {
         break;
       // enter
       case 13:
-        this.selectActiveItem(event);
+        this.selectActiveItem();
         event.preventDefault();
         break;
       default:
@@ -499,7 +561,7 @@ class Dropdown extends Component {
     event.preventDefault();
   };
 
-  handleSearch = value => {
+  handleSearch = (value: string) => {
     const { data } = this.props;
     this.setState({
       searchKeyword: value,
@@ -544,7 +606,7 @@ class Dropdown extends Component {
     );
   }
 
-  renderNode(node, index, layer) {
+  renderNode(node: Object, index: number, layer: number) {
     const {
       defaultExpandAll,
       valueKey,
@@ -599,7 +661,7 @@ class Dropdown extends Component {
           multiple
           {...props}
         >
-          {nodes.map((child, i) => this.renderNode(child, i, layer, node))}
+          {nodes.map((child, i) => this.renderNode(child, i, layer))}
         </InternalNode>
       );
     }
@@ -625,9 +687,9 @@ class Dropdown extends Component {
       this.setCheckState(formattedNodes);
     }
 
-    const nodes = formattedNodes.map((node, index) => {
-      return this.renderNode(node, index, layer);
-    });
+    const nodes = formattedNodes.map((node, index) =>
+      this.renderNode(node, index, layer),
+    );
     const styles = {
       height,
     };
@@ -736,9 +798,5 @@ class Dropdown extends Component {
     );
   }
 }
-
-Dropdown.propTypes = propTypes;
-
-Dropdown.defaultProps = defaultProps;
 
 export default Dropdown;
