@@ -12,7 +12,7 @@ disabledItems        | array            |         | 禁用节点列表
 defaultExpandAll     | bool             | false   | 默认展开所有节点
 cascade             | bool             | false   | checktree是否级联选择
 locale | object | | 本地语言
-placeholder | string | Please Select | 占位符
+placeholder | React.Node | Please Select | 占位符
 disabled | bool | false | 是否禁用 Picker
 seasrchable | bool | true | 是否可以清楚
 seasrchable | bool | true | 是否显示搜索框

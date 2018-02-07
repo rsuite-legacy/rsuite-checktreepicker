@@ -6,7 +6,7 @@ class CustomPicker extends React.Component {
     super(props);
     this.state = {
       data: treeData,
-      selectedValues: ['Dave', 'Maya']
+      selectedValues: []
     };
   }
 
@@ -29,6 +29,7 @@ class CustomPicker extends React.Component {
             console.log(activeNode, layer);
           }}
           onChange={this.handleOnChange}
+          placeholder="请选择"
           renderValue={(value, checkedItems, placeholder) => {
             if (!value.length) {
               return placeholder;

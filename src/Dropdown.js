@@ -56,7 +56,7 @@ type Props = {
   open?: boolean,
   defaultOpen?: boolean,
   locale?: Object,
-  placeholder?: string,
+  placeholder?: React.Node,
   cleanable?: boolean,
   searchable?: boolean,
   onSearch?: (searchKeyword: string, event: DefaultEvent) => void,
@@ -99,7 +99,6 @@ class Dropdown extends React.Component<Props, State> {
     valueKey: 'value',
     labelKey: 'label',
     childrenKey: 'children',
-    placeholder: 'placeholder',
   };
   constructor(props: Props) {
     super(props);
@@ -126,11 +125,6 @@ class Dropdown extends React.Component<Props, State> {
   componentWillReceiveProps(nextProps: Props) {
     const { searchKeyword } = this.state;
     const { value, data } = nextProps;
-    // if (!_.isEqual(data, this.props.data)) {
-    //   this.setState({
-    //     filterData: this.getFilterData(searchKeyword, data),
-    //   });
-    // }
     if (!_.isEqual(this.props.data, data)) {
       this.flattenNodes(nextProps.data);
       this.unserializeLists({
@@ -752,11 +746,9 @@ class Dropdown extends React.Component<Props, State> {
     );
 
     let placeholderText =
-      selectedValues && selectedValues.length ? (
-        `${selectedValues.length} selected`
-      ) : (
-        <FormattedMessage id={placeholder} />
-      );
+      selectedValues && selectedValues.length
+        ? `${selectedValues.length} selected`
+        : placeholder;
 
     if (renderValue) {
       placeholderText = renderValue(
@@ -799,7 +791,7 @@ class Dropdown extends React.Component<Props, State> {
               cleanable={cleanable && !disabled}
               hasValue={!!selectedValues && !!selectedValues.length}
             >
-              {placeholderText}
+              {placeholderText || <FormattedMessage id="placeholder" />}
             </Toggle>
           </OverlayTrigger>
         </div>
