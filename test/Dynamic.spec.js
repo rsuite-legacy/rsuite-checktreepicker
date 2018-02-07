@@ -2,10 +2,12 @@
 import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { shallow, mount, render } from 'enzyme';
+import { constants } from 'rsuite-utils/lib/Picker';
 import Picker from '../src';
 import treeData from '../docs/data/treeData';
 import { delay } from './utils';
 
+const { namespace } = constants;
 const newTreeData = [{
   value: 'children1',
   label: 'children1'
@@ -56,9 +58,10 @@ const setup = () => {
 };
 
 describe('ChectTree test suite', () => {
-  const { staticRender, fullRender } = setup();
+  const { fullRender } = setup();
   it('newData should be load after 2s', async () => {
-    fullRender.find('div[data-key="0-4"] > .expand-icon-wrapper > .expand-icon').simulate('click');
+    fullRender.find(`.${namespace}-toggle`).simulate('click');
+    document.querySelector('div[data-key="0-4"] > .expand-icon-wrapper > .expand-icon').click();
     const activeNode = mockOnExpand.mock.calls[0][0];
     const layer = mockOnExpand.mock.calls[0][1];
     const nextTreeData = cloneDeep(treeData);
