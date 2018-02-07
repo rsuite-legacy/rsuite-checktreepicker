@@ -42,7 +42,7 @@ type Props = {
   className?: string,
   height?: number,
   data: Array<any>,
-  defaultValue?: any,
+  defaultValue?: Array<any>,
   value?: Array<any>,
   disabledItems?: Array<any>,
   valueKey?: string,
@@ -106,8 +106,8 @@ class Dropdown extends React.Component<Props, State> {
     this.nodes = {};
     this.isControlled =
       'value' in props && 'onChange' in props && props.onChange;
-    const { value, defaultValue, data } = props;
-    const nextValue = value || defaultValue || [];
+    const { data } = props;
+    const nextValue = this.getValue();
 
     this.flattenNodes(data);
     this.unserializeLists({
@@ -145,6 +145,17 @@ class Dropdown extends React.Component<Props, State> {
         selectedValues: value,
       });
     }
+  }
+
+  getValue() {
+    const { value, defaultValue } = this.props;
+    if (value && value.length) {
+      return value;
+    }
+    if (defaultValue && defaultValue.length > 0) {
+      return defaultValue;
+    }
+    return [];
   }
 
   getNodeCheckState(node: Object, cascade: boolean) {
@@ -675,9 +686,7 @@ class Dropdown extends React.Component<Props, State> {
     // 树节点的层级
     let layer = 0;
     const { className, height } = this.props;
-    const classes = classNames('tree-view', className, {
-      checktree: true,
-    });
+    const classes = classNames(this.addPrefix('view'), className, {});
 
     const formattedNodes = this.state.formattedNodes.length
       ? this.state.formattedNodes
@@ -693,7 +702,7 @@ class Dropdown extends React.Component<Props, State> {
     const styles = {
       height,
     };
-
+    const treeNodesClass = this.addPrefix('nodes');
     return (
       <div
         ref={ref => {
@@ -703,7 +712,7 @@ class Dropdown extends React.Component<Props, State> {
         style={styles}
         onScroll={onScroll}
       >
-        <div className="tree-nodes">{nodes}</div>
+        <div className={treeNodesClass}>{nodes}</div>
       </div>
     );
   }
