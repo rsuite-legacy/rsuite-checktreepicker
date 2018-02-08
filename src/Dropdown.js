@@ -436,6 +436,8 @@ class Dropdown extends React.Component<Props, State> {
 
   container = null;
 
+  nodeRefs = {};
+
   selectActiveItem = () => {
     const { nodeData, layer } = this.getActiveItem();
     this.handleSelect(nodeData, +layer);
@@ -664,7 +666,9 @@ class Dropdown extends React.Component<Props, State> {
         <InternalNode
           className={childrenClasses}
           key={key}
-          ref={key}
+          ref={(ref) => {
+            this.nodeRefs[key] = ref;
+          }}
           multiple
           {...props}
         >
@@ -673,7 +677,15 @@ class Dropdown extends React.Component<Props, State> {
       );
     }
 
-    return <TreeCheckNode key={key} ref={key} {...props} />;
+    return (
+      <TreeCheckNode
+        key={key}
+        ref={(ref) => {
+          this.nodeRefs[key] = ref;
+        }}
+        {...props}
+      />
+    );
   }
 
   renderCheckTree() {
@@ -797,8 +809,8 @@ class Dropdown extends React.Component<Props, State> {
         </div>
       </IntlProvider>
     ) : (
-      this.renderCheckTree()
-    );
+        this.renderCheckTree()
+      );
   }
 }
 
