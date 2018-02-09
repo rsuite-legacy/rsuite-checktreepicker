@@ -4,10 +4,14 @@ import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
 import { CHECK_STATE } from './constants';
 
-type CheckState = CHECK_STATE.UNCHECK | CHECK_STATE.HALFCHECK | CHECK_STATE.CHECK;
+type CheckState =
+  | CHECK_STATE.UNCHECK
+  | CHECK_STATE.HALFCHECK
+  | CHECK_STATE.CHECK;
 type DefaultEvent = SyntheticEvent<*>;
 
 type Props = {
+  classPrefix: string,
   visible?: boolean,
   label?: any,
   nodeData: Object,
@@ -41,6 +45,7 @@ class TreeCheckNode extends React.Component<Props> {
 
   handleSelect = (event: DefaultEvent) => {
     const {
+      classPrefix,
       onTreeToggle,
       onSelect,
       hasChildren,
@@ -57,7 +62,12 @@ class TreeCheckNode extends React.Component<Props> {
 
     // 如果点击的是展开 icon 就 return
     if (event.target instanceof HTMLElement) {
-      if (hasClass(event.target.parentNode, 'expand-icon-wrapper')) {
+      if (
+        hasClass(
+          event.target.parentNode,
+          `${classPrefix}-node-expand-icon-wrapper`,
+        )
+      ) {
         return;
       }
     }
@@ -83,19 +93,16 @@ class TreeCheckNode extends React.Component<Props> {
   };
 
   renderIcon = () => {
-    const { onRenderTreeIcon, hasChildren, nodeData } = this.props;
-
-    const expandIcon =
-      typeof onRenderTreeIcon === 'function' ? (
-        onRenderTreeIcon(nodeData)
-      ) : (
-        <i className="expand-icon icon" />
-      );
+    const { onRenderTreeIcon, hasChildren, nodeData, classPrefix } = this.props;
+    let expandIcon = <i className={`${classPrefix}-node-expand-icon icon`} />;
+    if (typeof onRenderTreeIcon === 'function') {
+      expandIcon = onRenderTreeIcon(nodeData);
+    }
     return hasChildren ? (
       <div
         role="button"
         tabIndex="-1"
-        className="expand-icon-wrapper"
+        className={`${classPrefix}-node-expand-icon-wrapper`}
         onClick={this.handleTreeToggle}
       >
         {expandIcon}
@@ -104,20 +111,21 @@ class TreeCheckNode extends React.Component<Props> {
   };
 
   renderLabel = () => {
-    const { nodeData, onRenderTreeNode, label } = this.props;
+    const { classPrefix, nodeData, onRenderTreeNode, label } = this.props;
     let custom =
       typeof onRenderTreeNode === 'function'
         ? onRenderTreeNode(nodeData)
         : label;
     return (
-      <label className="checknode-label" title={label}>
+      <span className={`${classPrefix}-checknode-label`} title={label}>
         {custom}
-      </label>
+      </span>
     );
   };
 
   render() {
     const {
+      classPrefix,
       visible,
       active,
       layer,
@@ -127,12 +135,16 @@ class TreeCheckNode extends React.Component<Props> {
       checkState,
     } = this.props;
 
-    const classes = classNames('tree-node', {
+    const disabledClass = `${classPrefix}-node-disabled`;
+    const activeClass = `${classPrefix}-node-active`;
+    const checkClass = `${classPrefix}-node-checked`;
+    const halfCheckClass = `${classPrefix}-node-half-checked`;
+    const classes = classNames(`${classPrefix}-node`, {
       'text-muted': disabled,
-      'half-checked': checkState === CHECK_STATE.HALFCHECK,
-      checked: checkState === CHECK_STATE.CHECK,
-      disabled,
-      active,
+      [halfCheckClass]: checkState === CHECK_STATE.HALFCHECK,
+      [checkClass]: checkState === CHECK_STATE.CHECK,
+      [disabledClass]: disabled,
+      [activeClass]: active,
     });
 
     const styles = {

@@ -20,7 +20,6 @@ import {
   MenuWrapper,
   constants,
 } from 'rsuite-utils/lib/Picker';
-import InternalNode from './InternalNode';
 import TreeCheckNode from './TreeCheckNode';
 import defaultLocale from './locale/index';
 import { CHECK_STATE } from './constants';
@@ -44,7 +43,7 @@ type Props = {
   data: Array<any>,
   defaultValue?: Array<any>,
   value?: Array<any>,
-  disabledItems?: Array<any>,
+  disabledItemValues?: Array<any>,
   valueKey?: string,
   labelKey?: string,
   childrenKey?: string,
@@ -55,7 +54,7 @@ type Props = {
   disabled?: boolean,
   open?: boolean,
   defaultOpen?: boolean,
-  locale?: Object,
+  locale: Object,
   placeholder?: React.Node,
   cleanable?: boolean,
   searchable?: boolean,
@@ -78,6 +77,7 @@ type Props = {
 };
 
 type State = {
+  activeNode?: ?Object,
   formattedNodes: Array<any>,
   selectedValues: Array<any>,
   searchKeyword: string,
@@ -90,7 +90,7 @@ class Dropdown extends React.Component<Props, State> {
     cascade: true,
     value: [],
     disabled: PropTypes.false,
-    disabledItems: [],
+    disabledItemValues: [],
     expand: false,
     locale: defaultLocale,
     autoAdjustPosition: true,
@@ -119,6 +119,7 @@ class Dropdown extends React.Component<Props, State> {
       selectedValues: nextValue,
       searchKeyword: '',
       data: this.getFilterData('', data),
+      activeNode: null,
     };
   }
 
@@ -217,9 +218,10 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   getElementByDataKey = (dataKey: string) => {
-    const ele: Element | null | Text = findDOMNode(this);
+    const ele = findDOMNode(this.nodeRefs[dataKey]);
     if (ele instanceof Element) {
-      return ele.querySelector(`[data-key="${dataKey}"]`);
+      const nodeList = ele.querySelectorAll('.rs-picker-checktree-view-node');
+      return nodeList.length ? nodeList[0] : ele;
     }
     return null;
   };
@@ -273,8 +275,8 @@ class Dropdown extends React.Component<Props, State> {
    * @param {*} node
    */
   getDisabledState(node: Object) {
-    const { disabledItems = [], valueKey } = this.props;
-    return disabledItems.some((value: any) =>
+    const { disabledItemValues = [], valueKey } = this.props;
+    return disabledItemValues.some((value: any) =>
       _.isEqual(this.nodes[node.refKey][valueKey], value),
     );
   }
@@ -507,11 +509,15 @@ class Dropdown extends React.Component<Props, State> {
     const selectedValues = this.serializeList('check');
 
     if (this.isControlled) {
+      this.setState({
+        activeNode,
+      });
       onChange && onChange(selectedValues);
       onSelect && onSelect(activeNode, layer, selectedValues);
     } else {
       this.setState(
         {
+          activeNode,
           formattedNodes,
           selectedValues,
         },
@@ -527,9 +533,13 @@ class Dropdown extends React.Component<Props, State> {
    * 展开、收起节点
    */
   handleToggle = (nodeData: Object, layer: number) => {
-    const { onExpand } = this.props;
-    toggleClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
-    nodeData.expand = hasClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
+    const { classPrefix = '', onExpand } = this.props;
+    const openClass = `${classPrefix}-view-open`;
+    toggleClass(findDOMNode(this.nodeRefs[nodeData.refKey]), openClass);
+    nodeData.expand = hasClass(
+      findDOMNode(this.nodeRefs[nodeData.refKey]),
+      openClass,
+    );
     this.toggleExpand(nodeData, nodeData.expand);
     onExpand && onExpand(nodeData, layer);
   };
@@ -594,7 +604,7 @@ class Dropdown extends React.Component<Props, State> {
   };
 
   renderDropdownMenu() {
-    const { searchable, placement, renderExtraFooter } = this.props;
+    const { locale, searchable, placement, renderExtraFooter } = this.props;
     const classes = classNames(
       this.addPrefix('menu'),
       `${namespace}-placement-${_.kebabCase(placement)}`,
@@ -604,6 +614,7 @@ class Dropdown extends React.Component<Props, State> {
       <MenuWrapper className={classes}>
         {searchable ? (
           <SearchBar
+            placeholder={locale.searchPlaceholder}
             key="searchBar"
             onChange={this.handleSearch}
             value={this.state.searchKeyword}
@@ -615,7 +626,8 @@ class Dropdown extends React.Component<Props, State> {
     );
   }
 
-  renderNode(node: Object, index: number, layer: number) {
+  renderNode(node: Object, index: number, layer: number, classPrefix: string) {
+    const { activeNode } = this.state;
     const {
       defaultExpandAll,
       valueKey,
@@ -632,7 +644,9 @@ class Dropdown extends React.Component<Props, State> {
     const disabled = this.getDisabledState(node);
     const hasNotEmptyChildren =
       children && Array.isArray(children) && children.length > 0;
-
+    const active = activeNode
+      ? _.isEqual(activeNode[valueKey], node[valueKey])
+      : false;
     const props = {
       value: node[valueKey],
       label: node[labelKey],
@@ -642,7 +656,7 @@ class Dropdown extends React.Component<Props, State> {
       onRenderTreeIcon: renderTreeIcon,
       onSelect: this.handleSelect,
       onKeyDown: this.handleKeyDown,
-      // active: this.state.activeNode === value,
+      active,
       hasChildren: !!children,
       disabled,
       children,
@@ -657,30 +671,42 @@ class Dropdown extends React.Component<Props, State> {
       layer += 1;
 
       // 是否展开树节点且子节点不为空
-      let childrenClasses = classNames('node-children', {
-        open: defaultExpandAll && hasNotEmptyChildren,
+      const openClass = `${classPrefix}-open`;
+      let childrenClass = classNames(`${classPrefix}-node-children`, {
+        [openClass]: defaultExpandAll && hasNotEmptyChildren,
       });
 
       let nodes = children || [];
       return (
-        <InternalNode
-          className={childrenClasses}
+        <div
+          className={childrenClass}
           key={key}
-          ref={(ref) => {
+          ref={ref => {
             this.nodeRefs[key] = ref;
           }}
-          multiple
-          {...props}
         >
-          {nodes.map((child, i) => this.renderNode(child, i, layer))}
-        </InternalNode>
+          <TreeCheckNode
+            classPrefix={classPrefix}
+            key={key}
+            ref={ref => {
+              this.nodeRefs[key] = ref;
+            }}
+            {...props}
+          />
+          <div className={`${classPrefix}-children`}>
+            {nodes.map((child, i) =>
+              this.renderNode(child, i, layer, classPrefix),
+            )}
+          </div>
+        </div>
       );
     }
 
     return (
       <TreeCheckNode
+        classPrefix={classPrefix}
         key={key}
-        ref={(ref) => {
+        ref={ref => {
           this.nodeRefs[key] = ref;
         }}
         {...props}
@@ -694,7 +720,7 @@ class Dropdown extends React.Component<Props, State> {
     // 树节点的层级
     let layer = 0;
     const { className, height } = this.props;
-    const classes = classNames(this.addPrefix('view'), className, {});
+    const treeViewClass = classNames(this.addPrefix('view'), className, {});
 
     const formattedNodes = this.state.formattedNodes.length
       ? this.state.formattedNodes
@@ -705,7 +731,7 @@ class Dropdown extends React.Component<Props, State> {
     }
 
     const nodes = formattedNodes.map((node, index) =>
-      this.renderNode(node, index, layer),
+      this.renderNode(node, index, layer, treeViewClass),
     );
     const styles = {
       height,
@@ -716,7 +742,7 @@ class Dropdown extends React.Component<Props, State> {
         ref={ref => {
           this.treeView = ref;
         }}
-        className={classes}
+        className={treeViewClass}
         style={styles}
         onScroll={onScroll}
       >
@@ -778,7 +804,6 @@ class Dropdown extends React.Component<Props, State> {
         <div
           {...unhandled}
           className={classes}
-          onKeyDown={this.handleKeyDown}
           tabIndex={-1}
           role="menu"
           ref={ref => {
@@ -809,8 +834,8 @@ class Dropdown extends React.Component<Props, State> {
         </div>
       </IntlProvider>
     ) : (
-        this.renderCheckTree()
-      );
+      this.renderCheckTree()
+    );
   }
 }
 

@@ -6,7 +6,7 @@ class InlinePicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: treeData,
+      data: cityData,
       selectedValues: ['Dave']
     };
   }
@@ -26,7 +26,7 @@ class InlinePicker extends React.Component {
           inline
           height={320}
           data={data}
-          cascade={false}
+          cascade={true}
           defaultValue={selectedValues}
           onSelect={(activeNode, layer) => {
             console.log(activeNode, layer);

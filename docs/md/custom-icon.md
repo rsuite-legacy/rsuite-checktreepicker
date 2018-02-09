@@ -63,7 +63,7 @@ class CustomPicker extends React.Component {
           height={320}
           data={data}
           value={selectedValues}
-          disabledItems={['disabled']}
+          disabledItemValues={['disabled']}
           onSelect={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}

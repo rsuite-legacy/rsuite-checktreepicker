@@ -10,6 +10,7 @@ import './less/index.less';
 import '../src/less/index.less';
 import Picker from '../src';
 import treeData from './data/treeData';
+import cityData from './data/city';
 
 const babelOptions = {
   presets: ['stage-0', 'react', 'es2015'],
@@ -100,7 +101,7 @@ class App extends Component {
               <CodeView
                 source={require('./md/inline.md')}
                 dependencies={{
-                  treeData,
+                  cityData,
                   Picker,
                 }}
                 babelTransformOptions={babelOptions}
