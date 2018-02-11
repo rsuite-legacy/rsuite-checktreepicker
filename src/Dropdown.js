@@ -296,12 +296,17 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   getFocusableMenuItems = () => {
-    const { data, childrenKey } = this.props;
+    const { data } = this.state;
+    const { childrenKey } = this.props;
 
     let items = [];
     const loop = (treeNodes: Array<any>) => {
       treeNodes.forEach((node: Object) => {
-        if (!this.getDisabledState(node) && !this.getDisabledCheckboxState(node)) {
+        if (
+          !this.getDisabledState(node) &&
+          !this.getDisabledCheckboxState(node) &&
+          node.visible
+        ) {
           items.push(node);
           const nodeData = { ...node, ...this.nodes[node.refKey] };
           if (!this.getExpandState(nodeData)) {
