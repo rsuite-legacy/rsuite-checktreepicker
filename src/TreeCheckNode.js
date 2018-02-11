@@ -2,6 +2,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
+import { prefix } from 'rsuite-utils/lib/utils';
 import { CHECK_STATE } from './constants';
 
 type CheckState =
@@ -20,6 +21,7 @@ type Props = {
   hasChildren?: boolean,
   labelClickableExpand?: boolean,
   disabled?: boolean,
+  disabledCheckbox: boolean,
   layer: number,
   onTreeToggle?: (nodeData: Object, layer: number, event: DefaultEvent) => void,
   onSelect?: (nodeData: Object, layer: number, event: DefaultEvent) => void,
@@ -27,6 +29,9 @@ type Props = {
   onRenderTreeNode?: (nodeData: Object) => React.Node,
   onKeyDown?: (event: SyntheticKeyboardEvent<*>) => void,
 };
+
+const INITIAL_PADDING = 12;
+const PADDING = 16;
 
 class TreeCheckNode extends React.Component<Props> {
   static defaultProps = {
@@ -52,11 +57,12 @@ class TreeCheckNode extends React.Component<Props> {
       labelClickableExpand,
       layer,
       disabled,
+      disabledCheckbox,
       nodeData,
       checkState,
     } = this.props;
 
-    if (disabled) {
+    if (disabled || disabledCheckbox) {
       return;
     }
 
@@ -111,13 +117,33 @@ class TreeCheckNode extends React.Component<Props> {
   };
 
   renderLabel = () => {
-    const { classPrefix, nodeData, onRenderTreeNode, label } = this.props;
+    const {
+      classPrefix,
+      nodeData,
+      onRenderTreeNode,
+      label,
+      disabled,
+      disabledCheckbox,
+    } = this.props;
+    const addPrefix = prefix(classPrefix);
+    const input = (
+      <span className={addPrefix('input-wrapper')}>
+        <input
+          className={addPrefix('input')}
+          type="checkbox"
+          disabled={disabled}
+          onChange={this.handleSelect}
+        />
+        <span className={addPrefix('inner')} />
+      </span>
+    );
     let custom =
       typeof onRenderTreeNode === 'function'
         ? onRenderTreeNode(nodeData)
         : label;
     return (
-      <span className={`${classPrefix}-checknode-label`} title={label}>
+      <span className={addPrefix('checknode-label')} title={label}>
+        {!disabledCheckbox ? input : null}
         {custom}
       </span>
     );
@@ -130,26 +156,23 @@ class TreeCheckNode extends React.Component<Props> {
       active,
       layer,
       disabled,
+      disabledCheckbox,
       onKeyDown,
       nodeData,
       checkState,
     } = this.props;
 
-    const disabledClass = `${classPrefix}-node-disabled`;
-    const activeClass = `${classPrefix}-node-active`;
-    const checkClass = `${classPrefix}-node-checked`;
-    const halfCheckClass = `${classPrefix}-node-half-checked`;
+    const addPrefix = prefix(`${classPrefix}-node`);
     const classes = classNames(`${classPrefix}-node`, {
       'text-muted': disabled,
-      [halfCheckClass]: checkState === CHECK_STATE.HALFCHECK,
-      [checkClass]: checkState === CHECK_STATE.CHECK,
-      [disabledClass]: disabled,
-      [activeClass]: active,
+      [addPrefix('indeterminate')]: checkState === CHECK_STATE.HALFCHECK,
+      [addPrefix('checked')]: checkState === CHECK_STATE.CHECK,
+      [addPrefix('disabled')]: disabled,
+      [addPrefix('active')]: active,
+      [addPrefix('disabled-checkbox')]: disabledCheckbox,
     });
 
-    const styles = {
-      paddingLeft: layer * 20,
-    };
+    const styles = { paddingLeft: layer * PADDING + INITIAL_PADDING };
 
     return visible ? (
       <div

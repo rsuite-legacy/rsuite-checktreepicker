@@ -238,32 +238,40 @@
         display: block;
         position: relative;
         margin-bottom: 0;
-        padding-left: 40px;
+        padding-left: 16px;
         outline: 0;
         cursor: pointer;
         .ellipsis-basic();
+      }
+
+      &-input {
+        display: inline-block;
+        position: relative;
+        outline: 0;
+        vertical-align: text-top;
+        cursor: pointer;
+        width: 24px;
         &::before {
           content: '';
           position: absolute;
-          top: 2px;
-          left: 16px;
+          top: -4px;
+          left: 0;
           width: @check-box-size;
           height: @check-box-size;
           background: #fff;
           border: @container-border;
         }
-
         &::after {
-          .opacity(0);
           font-family: RSuiteIconFont;
           content: '\f00c';
           color: @check-box-fg;
           position: absolute;
-          left: 17px;
-          top: 1px;
-          width: 16px;
-          height: 16px;
+          top: -2px;
+          left: 0;
+          width: @check-box-size;
+          height: @check-box-size;
           text-align: center;
+          .opacity(0);
           transform: scale(0);
           transition: all 0.3s linear, transform 0.2s cubic-bezier(0, 0, 0.2, 1);
         }
@@ -282,6 +290,17 @@
           color: @B500;
           label {
             cursor: not-allowed;
+          }
+        }
+        &-disabled-checkbox {
+          &:focus {
+            outline: none;
+            cursor: auto;
+            background: none;
+          }
+          .rs-picker-checktree-view-checknode-label {
+            padding-left: 40px;
+            cursor: auto;
           }
         }
         &-expand-icon-wrapper {
@@ -303,26 +322,25 @@
           }
         }
 
-        &-half-checked {
-          .rs-picker-checktree-view-checknode-label::after {
+        &-indeterminate {
+          .rs-picker-checktree-view-input::after {
             .opacity(1);
             transform: scale(1);
             content: '\f0c8';
             font-size: 12px;
-            top: 3px;
           }
         }
         &-checked {
-          .rs-picker-checktree-view-checknode-label::after {
+          .rs-picker-checktree-view-input::after {
             .opacity(1);
             transform: scale(1);
           }
         }
         &-disabled {
-          .rs-picker-checktree-view-checknode-label::before {
+          .rs-picker-checktree-view-input::before {
             background: #eee;
           }
-          .rs-picker-checktree-view-checknode-label::after {
+          .rs-picker-checktree-view-input::after {
             color: #aaa;
           }
         }

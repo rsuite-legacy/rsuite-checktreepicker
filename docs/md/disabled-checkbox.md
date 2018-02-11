@@ -1,0 +1,36 @@
+### 禁用 checkbox
+<!-- start-code -->
+```js
+
+class DisabledPicker extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: treeData,
+      selectedValues: ['Dave', 'Maya']
+    };
+  }
+
+  render() {
+    const { data, selectedValues } = this.state;
+    return (
+      <div className="example-item">
+        <Picker
+          disabledCheckboxValues={['Marty']}
+          defaultExpandAll
+          height={320}
+          data={data}
+          onSelect={(activeNode, layer) => {
+            console.log(activeNode, layer);
+          }}
+          onChange={(values)=> console.log(values)}
+        />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<DisabledPicker/>);
+
+```
+<!-- end-code -->

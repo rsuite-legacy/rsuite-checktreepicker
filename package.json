@@ -53,14 +53,12 @@
     "dom-lib": "^0.2.3",
     "lodash": "^4.17.4",
     "prop-types": "^15.5.10",
-    "react-addons-css-transition-group": "^15.6.0",
-    "rsuite-check-tree": "3.0.0-next.1",
     "rsuite-intl": "^1.0.1",
     "rsuite-utils": "^1.0.0-next.4"
   },
   "peerDependencies": {
     "react": "^0.14.9 || >=15.3.0",
-    "react-dom": ">=0.14.0"
+    "react-dom": "^0.14.9 || >=15.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
@@ -81,6 +79,7 @@
     "compression-webpack-plugin": "^1.0.1",
     "coveralls": "^3.0.0",
     "css-loader": "^0.23.1",
+    "cz-conventional-changelog": "^2.1.0",
     "enzyme": "^2.7.1",
     "es5-shim": "^4.1.14",
     "eslint": "^3.19.0",
@@ -121,5 +120,10 @@
     "uuid": "^2.0.3",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.2.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

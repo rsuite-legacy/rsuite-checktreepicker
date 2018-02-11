@@ -31,7 +31,7 @@ class App extends Component {
             <code>示例</code>
           </h2>
 
-          <Row>
+{/*           <Row>
             <Col md={12}>
               <CodeView
                 source={require('./md/simple.md')}
@@ -68,12 +68,12 @@ class App extends Component {
                 babelTransformOptions={babelOptions}
               />
             </Col>
-          </Row>
+          </Row> */}
 
           <Row>
             <Col md={12}>
               <CodeView
-                source={require('./md/custom.md')}
+                source={require('./md/disabled-checkbox.md')}
                 dependencies={{
                   treeData,
                   Picker,
@@ -83,45 +83,6 @@ class App extends Component {
             </Col>
           </Row>
 
-          <Row>
-            <Col md={12}>
-              <CodeView
-                source={require('./md/custom-icon.md')}
-                dependencies={{
-                  treeData,
-                  Picker,
-                }}
-                babelTransformOptions={babelOptions}
-              />
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={12}>
-              <CodeView
-                source={require('./md/inline.md')}
-                dependencies={{
-                  cityData,
-                  Picker,
-                }}
-                babelTransformOptions={babelOptions}
-              />
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={12}>
-              <CodeView
-                source={require('./md/dynamic.md')}
-                dependencies={{
-                  treeData,
-                  Picker,
-                  cloneDeep,
-                }}
-                babelTransformOptions={babelOptions}
-              />
-            </Col>
-          </Row>
           <h2 id="API">API</h2>
           <Markdown>{require('./md/props.md')}</Markdown>
         </Col>

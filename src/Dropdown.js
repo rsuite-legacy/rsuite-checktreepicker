@@ -44,6 +44,8 @@ type Props = {
   defaultValue?: Array<any>,
   value?: Array<any>,
   disabledItemValues?: Array<any>,
+  // 禁用 checkbox 数组
+  disabledCheckboxValues: Array<any>,
   valueKey?: string,
   labelKey?: string,
   childrenKey?: string,
@@ -91,14 +93,15 @@ class Dropdown extends React.Component<Props, State> {
     value: [],
     disabled: PropTypes.false,
     disabledItemValues: [],
+    disabledCheckboxValues: [],
     expand: false,
     locale: defaultLocale,
-    autoAdjustPosition: true,
     cleanable: true,
     searchable: true,
     valueKey: 'value',
     labelKey: 'label',
     childrenKey: 'children',
+    placement: 'bottomLeft',
   };
   constructor(props: Props) {
     super(props);
@@ -107,7 +110,6 @@ class Dropdown extends React.Component<Props, State> {
       'value' in props && 'onChange' in props && props.onChange;
     const { data } = props;
     const nextValue = this.getValue();
-
     this.flattenNodes(data);
     this.unserializeLists({
       check: nextValue,
@@ -242,6 +244,7 @@ class Dropdown extends React.Component<Props, State> {
       const formatted = { ...node };
       formatted.check = this.nodes[node.refKey].check;
       formatted.expand = this.nodes[node.refKey].expand;
+      formatted.disabledCheckbox = this.nodes[node.refKey].disabledCheckbox;
       if (Array.isArray(node.children) && node.children.length > 0) {
         formatted.children = this.getFormattedNodes(formatted.children);
       }
@@ -280,13 +283,25 @@ class Dropdown extends React.Component<Props, State> {
       _.isEqual(this.nodes[node.refKey][valueKey], value),
     );
   }
+
+  /**
+   * 获取每个节点的是否需要 disabled checkbox
+   * @param {*} node
+   */
+  getDisabledCheckboxState(node: Object) {
+    const { disabledCheckboxValues = [], valueKey } = this.props;
+    return disabledCheckboxValues.some((value: any) =>
+      _.isEqual(node[valueKey], value),
+    );
+  }
+
   getFocusableMenuItems = () => {
     const { data, childrenKey } = this.props;
 
     let items = [];
     const loop = (treeNodes: Array<any>) => {
       treeNodes.forEach((node: Object) => {
-        if (!this.getDisabledState(node)) {
+        if (!this.getDisabledState(node) && !this.getDisabledCheckboxState(node)) {
           items.push(node);
           const nodeData = { ...node, ...this.nodes[node.refKey] };
           if (!this.getExpandState(nodeData)) {
@@ -388,6 +403,7 @@ class Dropdown extends React.Component<Props, State> {
         label: node[labelKey],
         value: node[valueKey],
         expand: this.getExpandState(node),
+        disabledCheckbox: this.getDisabledCheckboxState(node),
       };
       if (parentNode) {
         this.nodes[refKey].parentNode = parentNode;
@@ -482,7 +498,10 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   toggleNode(key: string, node: Object, toggleValue: boolean) {
-    this.nodes[node.refKey][key] = toggleValue;
+    // 如果该节点处于 disabledChecbox，则忽略该值
+    if (!node.disabledCheckbox) {
+      this.nodes[node.refKey][key] = toggleValue;
+    }
   }
 
   toggleExpand(node: Object, isExpand: boolean) {
@@ -659,6 +678,7 @@ class Dropdown extends React.Component<Props, State> {
       active,
       hasChildren: !!children,
       disabled,
+      disabledCheckbox: node.disabledCheckbox,
       children,
       index,
       layer,
