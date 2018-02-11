@@ -8,7 +8,8 @@ data                 | array            |         | tree 数据
 valueKey             | string           | "value" | tree数据结构value属性名称
 labelKey             | string           | "label" | tree数据结构label属性名称
 childKey             | string           | "children" | tree数据结构children属性名称
-disabledItems        | array            |         | 禁用节点列表
+disabledItemValues        | array            |         | 禁用节点列表
+disabledCheckboxValues        | array            |         | 禁用节点的checkbox列表
 defaultExpandAll     | bool             | false   | 默认展开所有节点
 cascade             | bool             | false   | checktree是否级联选择
 locale | object | | 本地语言
