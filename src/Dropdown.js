@@ -326,7 +326,7 @@ class Dropdown extends React.Component<Props, State> {
   getItemsAndActiveIndex() {
     const items = this.getFocusableMenuItems();
 
-    let activeIndex = 0;
+    let activeIndex = -1;
     items.forEach((item, index) => {
       if (document.activeElement !== null) {
         if (item.refKey === document.activeElement.getAttribute('data-key')) {
@@ -602,6 +602,26 @@ class Dropdown extends React.Component<Props, State> {
     event.preventDefault();
   };
 
+  handleToggleKeyDown = (event: SyntheticKeyboardEvent<*>) => {
+    if (!this.treeView) {
+      return;
+    }
+
+    if (event.target.className === `${namespace}-toggle`) {
+      switch (event.keyCode) {
+        // down
+        case 40:
+          this.focusNextItem();
+          event.preventDefault();
+          break;
+        default:
+      }
+      return;
+    }
+
+    event.preventDefault();
+  };
+
   handleSearch = (value: string, event: DefaultEvent) => {
     const { data, onSearch } = this.props;
     this.setState({
@@ -828,6 +848,7 @@ class Dropdown extends React.Component<Props, State> {
       <IntlProvider locale={locale}>
         <div
           {...unhandled}
+          onKeyDown={this.handleToggleKeyDown}
           className={classes}
           tabIndex={-1}
           role="menu"
