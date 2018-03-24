@@ -73,9 +73,7 @@ type Props = {
     checkItems: Array<any>,
     placeholder: string | React.Node,
   ) => React.Node,
-  renderMenu?: (
-    menu: string | React.Node,
-  ) => React.Node,
+  renderMenu?: (menu: string | React.Node) => React.Node,
   renderExtraFooter?: () => React.Node,
   placement?: PlacementEighPoints,
 };
@@ -128,8 +126,8 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    const { searchKeyword } = this.state;
-    const { value, data } = nextProps;
+    const { searchKeyword, selectedValues } = this.state;
+    const { value, data, cascade } = nextProps;
     if (!_.isEqual(this.props.data, data)) {
       this.flattenNodes(nextProps.data);
       this.unserializeLists({
@@ -143,6 +141,17 @@ class Dropdown extends React.Component<Props, State> {
       this.setState({
         selectedValues: value,
       });
+    }
+
+    // cascade 改变时，重新初始化
+    if (!_.isEqual(cascade, this.props.cascade) && cascade) {
+      this.flattenNodes(data);
+      this.unserializeLists(
+        {
+          check: selectedValues,
+        },
+        nextProps,
+      );
     }
   }
 
@@ -256,6 +265,9 @@ class Dropdown extends React.Component<Props, State> {
   setCheckState(nodes: Array<any>) {
     const { cascade } = this.props;
     nodes.forEach((node: Object) => {
+      if (Array.isArray(node.children) && node.children.length > 0) {
+        this.setCheckState(node.children);
+      }
       const checkState = this.getNodeCheckState(node, cascade);
       let isChecked = false;
       if (
@@ -268,9 +280,6 @@ class Dropdown extends React.Component<Props, State> {
         isChecked = true;
       }
       this.toggleNode('check', node, isChecked);
-      if (Array.isArray(node.children) && node.children.length > 0) {
-        this.setCheckState(node.children);
-      }
     });
   }
 
@@ -430,8 +439,8 @@ class Dropdown extends React.Component<Props, State> {
     return list;
   }
 
-  unserializeLists(lists: Object) {
-    const { valueKey, cascade } = this.props;
+  unserializeLists(lists: Object, nextProps?: Props = this.props) {
+    const { valueKey, cascade } = nextProps;
     // Reset values to false
     Object.keys(this.nodes).forEach((refKey: string) => {
       Object.keys(lists).forEach((listKey: string) => {
@@ -648,7 +657,13 @@ class Dropdown extends React.Component<Props, State> {
   };
 
   renderDropdownMenu() {
-    const { locale, searchable, placement, renderExtraFooter, renderMenu } = this.props;
+    const {
+      locale,
+      searchable,
+      placement,
+      renderExtraFooter,
+      renderMenu,
+    } = this.props;
     const classes = classNames(
       this.addPrefix('menu'),
       `${namespace}-placement-${_.kebabCase(placement)}`,
@@ -717,8 +732,7 @@ class Dropdown extends React.Component<Props, State> {
       // 是否展开树节点且子节点不为空
       const openClass = `${classPrefix}-open`;
       let childrenClass = classNames(`${classPrefix}-node-children`, {
-        [openClass]:
-          (defaultExpandAll || node.expand) && hasNotEmptyChildren,
+        [openClass]: (defaultExpandAll || node.expand) && hasNotEmptyChildren,
       });
 
       let nodes = children || [];
@@ -886,8 +900,8 @@ class Dropdown extends React.Component<Props, State> {
         </div>
       </IntlProvider>
     ) : (
-        this.renderCheckTree()
-      );
+      this.renderCheckTree()
+    );
   }
 }
 

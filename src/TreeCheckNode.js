@@ -40,22 +40,6 @@ class TreeCheckNode extends React.Component<Props> {
     visible: true,
   };
 
-  // shouldComponentUpdate(nextProps: Props) {
-  //   const {
-  //     checkState,
-  //     nodeData,
-  //   } = this.props;
-  //   return (
-  //     nextProps.checkState !== checkState ||
-  //     !_.isEqual(nextProps.nodeData, nodeData) ||
-  //     this.isEqualRenderTreeIcon(
-  //       nextProps.onRenderTreeIcon,
-  //       nextProps.nodeData,
-  //     ) ||
-  //     this.isEqualRenderTreeNode(nextProps.onRenderTreeNode, nextProps.nodeData)
-  //   );
-  // }
-
   shouldComponentUpdate(nextProps: Props) {
     return shallowCompare(this, nextProps);
   }

@@ -10,8 +10,8 @@ class InlinePicker extends React.Component {
     super(props);
     this.state = {
       data: cityData,
-      selectedValues: [2, 38],
-      cascade: true,
+      selectedValues: [{ id: 2 }, { id: 38 }],
+      cascade: false,
     };
   }
 
@@ -33,13 +33,13 @@ class InlinePicker extends React.Component {
     const { data, selectedValues, cascade } = this.state;
     return (
       <div className="">
-        <button onClick={this.handleToggle}>Toggle cascade </button>
+        {/* <button onClick={this.handleToggle}>cascade: </button> */}
         <Picker
           defaultExpandAll
           inline
           height={320}
           data={data}
-          cascade={true}
+          cascade={cascade}
           defaultValue={selectedValues}
           onSelect={(activeNode, layer) => {
             console.log(activeNode, layer);
