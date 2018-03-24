@@ -2,6 +2,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
+import shallowCompare from 'react-addons-shallow-compare';
 import { hasClass } from 'dom-lib';
 import { prefix } from 'rsuite-utils/lib/utils';
 import { CHECK_STATE } from './constants';
@@ -39,20 +40,24 @@ class TreeCheckNode extends React.Component<Props> {
     visible: true,
   };
 
+  // shouldComponentUpdate(nextProps: Props) {
+  //   const {
+  //     checkState,
+  //     nodeData,
+  //   } = this.props;
+  //   return (
+  //     nextProps.checkState !== checkState ||
+  //     !_.isEqual(nextProps.nodeData, nodeData) ||
+  //     this.isEqualRenderTreeIcon(
+  //       nextProps.onRenderTreeIcon,
+  //       nextProps.nodeData,
+  //     ) ||
+  //     this.isEqualRenderTreeNode(nextProps.onRenderTreeNode, nextProps.nodeData)
+  //   );
+  // }
+
   shouldComponentUpdate(nextProps: Props) {
-    const {
-      checkState,
-      nodeData,
-    } = this.props;
-    return (
-      nextProps.checkState !== checkState ||
-      !_.isEqual(nextProps.nodeData, nodeData) ||
-      this.isEqualRenderTreeIcon(
-        nextProps.onRenderTreeIcon,
-        nextProps.nodeData,
-      ) ||
-      this.isEqualRenderTreeNode(nextProps.onRenderTreeNode, nextProps.nodeData)
-    );
+    return shallowCompare(this, nextProps);
   }
 
   isEqualRenderTreeIcon(
