@@ -1,26 +1,39 @@
 ### inline 模式
+
 设置 `inline` 属性，就能当做 `check tree` 使用。
+
 <!-- start-code -->
+
 ```js
 class InlinePicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: cityData,
-      selectedValues: ['Dave']
+      selectedValues: [2, 38],
+      cascade: true,
     };
   }
 
-  handleOnChange = (values) => {
+  handleOnChange = values => {
     this.setState({
-      selectedValues: values
+      selectedValues: values,
     });
-  }
+  };
+
+  handleToggle = () => {
+    this.setState(prev => {
+      return {
+        cascade: !prev.cascade,
+      };
+    });
+  };
 
   render() {
-    const { data, selectedValues } = this.state;
+    const { data, selectedValues, cascade } = this.state;
     return (
       <div className="">
+        <button onClick={this.handleToggle}>Toggle cascade </button>
         <Picker
           defaultExpandAll
           inline
@@ -37,6 +50,7 @@ class InlinePicker extends React.Component {
   }
 }
 
-ReactDOM.render(<InlinePicker />)
+ReactDOM.render(<InlinePicker />);
 ```
+
 <!-- end-code -->

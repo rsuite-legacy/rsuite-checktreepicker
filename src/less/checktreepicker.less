@@ -241,7 +241,11 @@
         padding-left: 16px;
         outline: 0;
         cursor: pointer;
-        .ellipsis-basic();
+        white-space: nowrap;
+        &:focus {
+          background: @H050;
+          outline: @H900 dotted thin;
+        }
       }
 
       &-input {
@@ -279,16 +283,12 @@
       &-node {
         position: relative;
         padding: 2px 0;
-        &:focus {
-          background: @H050;
-          outline: @H900 dotted thin;
-        }
         &-active {
           color: @H500;
         }
         &-disabled {
           color: @B500;
-          label {
+          span {
             cursor: not-allowed;
           }
         }

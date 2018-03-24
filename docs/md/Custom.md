@@ -5,7 +5,7 @@ class CustomPicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: treeData,
+      data: cityData,
       selectedValues: []
     };
   }
@@ -26,7 +26,7 @@ class CustomPicker extends React.Component {
           data={data}
           value={selectedValues}
           onSelect={(activeNode, layer) => {
-            console.log(activeNode, layer);
+            // console.log(activeNode, layer);
           }}
           onChange={this.handleOnChange}
           placeholder="请选择"

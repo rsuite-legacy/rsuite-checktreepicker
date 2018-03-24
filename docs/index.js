@@ -87,7 +87,7 @@ class App extends Component {
               <CodeView
                 source={require('./md/custom.md')}
                 dependencies={{
-                  treeData,
+                  cityData,
                   Picker,
                 }}
                 babelTransformOptions={babelOptions}

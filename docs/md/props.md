@@ -26,6 +26,7 @@ onSelect             | function(activeNode, layer, values)       |         | 选
 renderTreeNode       | function(nodeData)         |         | 自定义渲染 tree 节点
 renderTreeIcon       | function(nodeData)         |         | 自定义渲染 图标
 renderValue    | function(values, checkItems, placeholder)| |自定义渲染placeholder
+renderValue    | function(menu)| |自定义渲染 Dropdown Menu
 renderExtraFooter | ()=>React.Node | | 自定义页脚内容
 placement | enum: Placement | `bottomLeft` | 打开位置
 

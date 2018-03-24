@@ -1,7 +1,6 @@
 // @flow
 
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { toggleClass, hasClass } from 'dom-lib';
 import { findDOMNode } from 'react-dom';
@@ -74,6 +73,9 @@ type Props = {
     checkItems: Array<any>,
     placeholder: string | React.Node,
   ) => React.Node,
+  renderMenu?: (
+    menu: string | React.Node,
+  ) => React.Node,
   renderExtraFooter?: () => React.Node,
   placement?: PlacementEighPoints,
 };
@@ -91,7 +93,7 @@ class Dropdown extends React.Component<Props, State> {
     inline: false,
     cascade: true,
     value: [],
-    disabled: PropTypes.false,
+    disabled: false,
     disabledItemValues: [],
     disabledCheckboxValues: [],
     expand: false,
@@ -222,8 +224,7 @@ class Dropdown extends React.Component<Props, State> {
   getElementByDataKey = (dataKey: string) => {
     const ele = findDOMNode(this.nodeRefs[dataKey]);
     if (ele instanceof Element) {
-      const nodeList = ele.querySelectorAll('.rs-picker-checktree-view-node');
-      return nodeList.length ? nodeList[0] : ele;
+      return ele.querySelector('.rs-picker-checktree-view-checknode-label');
     }
     return null;
   };
@@ -483,7 +484,8 @@ class Dropdown extends React.Component<Props, State> {
     if (items.length === 0) {
       return;
     }
-    const prevIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
+    let prevIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
+    prevIndex = prevIndex >= 0 ? prevIndex : 0;
     const node = this.getElementByDataKey(items[prevIndex].refKey);
     if (node !== null) {
       node.focus();
@@ -524,11 +526,11 @@ class Dropdown extends React.Component<Props, State> {
     const { data } = this.state;
     const { onChange, onSelect, cascade } = this.props;
     this.toggleChecked(activeNode, activeNode.check, cascade);
-    const formattedNodes = this.getFormattedNodes(data);
+    // const formattedNodes = this.getFormattedNodes(data);
 
-    if (cascade) {
-      this.setCheckState(formattedNodes);
-    }
+    // if (cascade) {
+    //   this.setCheckState(formattedNodes);
+    // }
 
     const selectedValues = this.serializeList('check');
 
@@ -542,7 +544,7 @@ class Dropdown extends React.Component<Props, State> {
       this.setState(
         {
           activeNode,
-          formattedNodes,
+          // formattedNodes,
           selectedValues,
         },
         () => {
@@ -598,8 +600,6 @@ class Dropdown extends React.Component<Props, State> {
         break;
       default:
     }
-
-    event.preventDefault();
   };
 
   handleToggleKeyDown = (event: SyntheticKeyboardEvent<*>) => {
@@ -607,7 +607,10 @@ class Dropdown extends React.Component<Props, State> {
       return;
     }
 
-    if (event.target.className === `${namespace}-toggle`) {
+    if (
+      event.target.className === `${namespace}-toggle` ||
+      event.target.className === `${namespace}-search-bar-input`
+    ) {
       switch (event.keyCode) {
         // down
         case 40:
@@ -616,10 +619,7 @@ class Dropdown extends React.Component<Props, State> {
           break;
         default:
       }
-      return;
     }
-
-    event.preventDefault();
   };
 
   handleSearch = (value: string, event: DefaultEvent) => {
@@ -648,12 +648,12 @@ class Dropdown extends React.Component<Props, State> {
   };
 
   renderDropdownMenu() {
-    const { locale, searchable, placement, renderExtraFooter } = this.props;
+    const { locale, searchable, placement, renderExtraFooter, renderMenu } = this.props;
     const classes = classNames(
       this.addPrefix('menu'),
       `${namespace}-placement-${_.kebabCase(placement)}`,
     );
-
+    const menu = this.renderCheckTree();
     return (
       <MenuWrapper className={classes}>
         {searchable ? (
@@ -664,7 +664,7 @@ class Dropdown extends React.Component<Props, State> {
             value={this.state.searchKeyword}
           />
         ) : null}
-        {this.renderCheckTree()}
+        {renderMenu ? renderMenu(menu) : menu}
         {renderExtraFooter && renderExtraFooter()}
       </MenuWrapper>
     );
@@ -699,7 +699,6 @@ class Dropdown extends React.Component<Props, State> {
       onRenderTreeNode: renderTreeNode,
       onRenderTreeIcon: renderTreeIcon,
       onSelect: this.handleSelect,
-      onKeyDown: this.handleKeyDown,
       active,
       hasChildren: !!children,
       disabled,
@@ -718,7 +717,8 @@ class Dropdown extends React.Component<Props, State> {
       // 是否展开树节点且子节点不为空
       const openClass = `${classPrefix}-open`;
       let childrenClass = classNames(`${classPrefix}-node-children`, {
-        [openClass]: defaultExpandAll && hasNotEmptyChildren,
+        [openClass]:
+          (defaultExpandAll || node.expand) && hasNotEmptyChildren,
       });
 
       let nodes = children || [];
@@ -761,7 +761,7 @@ class Dropdown extends React.Component<Props, State> {
 
   renderCheckTree() {
     const { data } = this.state;
-    const { onScroll, cascade } = this.props;
+    const { onScroll } = this.props;
     // 树节点的层级
     let layer = 0;
     const { className, height } = this.props;
@@ -771,9 +771,9 @@ class Dropdown extends React.Component<Props, State> {
       ? this.state.formattedNodes
       : this.getFormattedNodes(data);
 
-    if (cascade) {
-      this.setCheckState(formattedNodes);
-    }
+    // if (cascade) {
+    //   this.setCheckState(formattedNodes);
+    // }
 
     const nodes = formattedNodes.map((node, index) =>
       this.renderNode(node, index, layer, treeViewClass),
@@ -790,6 +790,7 @@ class Dropdown extends React.Component<Props, State> {
         className={treeViewClass}
         style={styles}
         onScroll={onScroll}
+        onKeyDown={this.handleKeyDown}
       >
         <div className={treeNodesClass}>{nodes}</div>
       </div>
@@ -797,7 +798,6 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   render() {
-    const { data } = this.state;
     const {
       classPrefix,
       inline,
@@ -828,17 +828,23 @@ class Dropdown extends React.Component<Props, State> {
       className,
     );
 
-    let placeholderText =
-      selectedValues && selectedValues.length
-        ? `${selectedValues.length} selected`
-        : placeholder;
-
-    if (renderValue) {
+    let placeholderText = placeholder;
+    if (selectedValues && selectedValues.length) {
+      placeholderText = `${selectedValues.length} selected`;
+    }
+    if (renderValue && selectedValues && selectedValues.length) {
+      const checkItems = [];
+      Object.keys(this.nodes).map((refKey: string) => {
+        const node = this.nodes[refKey];
+        if (
+          selectedValues.some((value: any) => _.isEqual(node[valueKey], value))
+        ) {
+          checkItems.push(node);
+        }
+      });
       placeholderText = renderValue(
         selectedValues,
-        data.filter(item =>
-          selectedValues.some(val => _.eq(item[valueKey], val)),
-        ),
+        checkItems,
         placeholderText,
       );
     }
@@ -880,8 +886,8 @@ class Dropdown extends React.Component<Props, State> {
         </div>
       </IntlProvider>
     ) : (
-      this.renderCheckTree()
-    );
+        this.renderCheckTree()
+      );
   }
 }
 

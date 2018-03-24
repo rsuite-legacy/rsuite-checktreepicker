@@ -1,6 +1,7 @@
 // @flow
 import * as React from 'react';
 import classNames from 'classnames';
+import _ from 'lodash';
 import { hasClass } from 'dom-lib';
 import { prefix } from 'rsuite-utils/lib/utils';
 import { CHECK_STATE } from './constants';
@@ -15,6 +16,7 @@ type Props = {
   classPrefix: string,
   visible?: boolean,
   label?: any,
+  value?: any,
   nodeData: Object,
   active?: boolean,
   checkState?: CheckState,
@@ -27,7 +29,6 @@ type Props = {
   onSelect?: (nodeData: Object, layer: number, event: DefaultEvent) => void,
   onRenderTreeIcon?: (nodeData: Object) => React.Node,
   onRenderTreeNode?: (nodeData: Object) => React.Node,
-  onKeyDown?: (event: SyntheticKeyboardEvent<*>) => void,
 };
 
 const INITIAL_PADDING = 12;
@@ -37,6 +38,45 @@ class TreeCheckNode extends React.Component<Props> {
   static defaultProps = {
     visible: true,
   };
+
+  shouldComponentUpdate(nextProps: Props) {
+    const {
+      checkState,
+      nodeData,
+    } = this.props;
+    return (
+      nextProps.checkState !== checkState ||
+      !_.isEqual(nextProps.nodeData, nodeData) ||
+      this.isEqualRenderTreeIcon(
+        nextProps.onRenderTreeIcon,
+        nextProps.nodeData,
+      ) ||
+      this.isEqualRenderTreeNode(nextProps.onRenderTreeNode, nextProps.nodeData)
+    );
+  }
+
+  isEqualRenderTreeIcon(
+    func?: (nodeData: Object) => React.Node,
+    params: Object,
+  ) {
+    const { onRenderTreeIcon, nodeData } = this.props;
+    if (typeof func === 'function' && typeof onRenderTreeIcon === 'function') {
+      return _.isEqual(func(params), onRenderTreeIcon(nodeData));
+    }
+    return false;
+  }
+
+  isEqualRenderTreeNode(
+    func?: (nodeData: Object) => React.Node,
+    params: Object,
+  ) {
+    const { onRenderTreeNode, nodeData } = this.props;
+    if (typeof func === 'function' && typeof onRenderTreeNode === 'function') {
+      return _.isEqual(func(params), onRenderTreeNode(nodeData));
+    }
+    return false;
+  }
+
   /**
    * 展开收缩节点
    */
@@ -122,6 +162,7 @@ class TreeCheckNode extends React.Component<Props> {
       nodeData,
       onRenderTreeNode,
       label,
+      layer,
       disabled,
       disabledCheckbox,
     } = this.props;
@@ -142,7 +183,15 @@ class TreeCheckNode extends React.Component<Props> {
         ? onRenderTreeNode(nodeData)
         : label;
     return (
-      <span className={addPrefix('checknode-label')} title={label}>
+      <span
+        role="button"
+        tabIndex="-1"
+        className={addPrefix('checknode-label')}
+        title={label}
+        data-layer={layer}
+        data-key={nodeData.refKey}
+        onClick={this.handleSelect}
+      >
         {!disabledCheckbox ? input : null}
         {custom}
       </span>
@@ -157,8 +206,6 @@ class TreeCheckNode extends React.Component<Props> {
       layer,
       disabled,
       disabledCheckbox,
-      onKeyDown,
-      nodeData,
       checkState,
     } = this.props;
 
@@ -175,16 +222,7 @@ class TreeCheckNode extends React.Component<Props> {
     const styles = { paddingLeft: layer * PADDING + INITIAL_PADDING };
 
     return visible ? (
-      <div
-        tabIndex={-1}
-        role="button"
-        onClick={this.handleSelect}
-        onKeyDown={onKeyDown}
-        data-layer={layer}
-        data-key={nodeData.refKey}
-        style={styles}
-        className={classes}
-      >
+      <div style={styles} className={classes}>
         {this.renderIcon()}
         {this.renderLabel()}
       </div>
