@@ -55,10 +55,10 @@
     "lodash": "^4.17.4",
     "prop-types": "^15.5.10",
     "react-addons-shallow-compare": "^15.6.2",
-    "rsuite-intl": "^1.0.1",
-    "rsuite-utils": "^1.0.0-next.8"
+    "rsuite-intl": "^1.0.1"
   },
   "peerDependencies": {
+    "rsuite-utils": "^1.0.0",
     "react": "^0.14.9 || >=15.3.0",
     "react-dom": "^0.14.9 || >=15.3.0"
   },
