@@ -85,6 +85,7 @@ type State = {
   searchKeyword: string,
   data: Array<any>,
 };
+
 class Dropdown extends React.Component<Props, State> {
   static defaultProps = {
     classPrefix: `${namespace}-checktree`,
@@ -108,21 +109,31 @@ class Dropdown extends React.Component<Props, State> {
     this.nodes = {};
     this.isControlled =
       'value' in props && 'onChange' in props && props.onChange;
-    const { data } = props;
+
     const nextValue = this.getValue(props);
-    this.flattenNodes(data, props);
-    this.unserializeLists({
-      check: nextValue,
-    });
+    // this.flattenNodes(data, props);
 
     this.state = {
       formattedNodes: [],
-      // data: [],
+      data: [],
       selectedValues: nextValue,
       searchKeyword: '',
-      data: this.getFilterData('', data, props),
       activeNode: null,
     };
+  }
+
+  componentWillMount() {
+    const { data } = this.props;
+    const nextValue = this.getValue(this.props);
+    this.flattenNodes(data);
+    this.unserializeLists(
+      {
+        check: nextValue,
+      },
+    );
+    this.setState({
+      data: this.getFilterData('', data),
+    });
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -196,7 +207,11 @@ class Dropdown extends React.Component<Props, State> {
     return false;
   }
 
-  getFilterData(searchKeyword: string = '', data: Array<any>, props?: Props = this.props) {
+  getFilterData(
+    searchKeyword: string = '',
+    data: Array<any>,
+    props?: Props = this.props,
+  ) {
     const { labelKey } = props;
     const treeData = _.cloneDeep(data);
     const setVisible = (nodes = []) =>
@@ -785,7 +800,6 @@ class Dropdown extends React.Component<Props, State> {
     let layer = 0;
     const { className, height } = this.props;
     const treeViewClass = classNames(this.addPrefix('view'), className, {});
-
     const formattedNodes = this.state.formattedNodes.length
       ? this.state.formattedNodes
       : this.getFormattedNodes(data);
