@@ -110,7 +110,7 @@ class Dropdown extends React.Component<Props, State> {
       'value' in props && 'onChange' in props && props.onChange;
     const { data } = props;
     const nextValue = this.getValue();
-    this.flattenNodes(data);
+    this.flattenNodes(data, props);
     this.unserializeLists({
       check: nextValue,
     });
@@ -405,8 +405,13 @@ class Dropdown extends React.Component<Props, State> {
    * @param {*} nodes tree data
    * @param {*} ref 当前层级
    */
-  flattenNodes(nodes: Array<any>, ref?: string = '0', parentNode?: Object) {
-    const { labelKey, valueKey, childrenKey } = this.props;
+  flattenNodes(
+    nodes: Array<any>,
+    props?: Props = this.props,
+    ref?: string = '0',
+    parentNode?: Object,
+  ) {
+    const { labelKey, valueKey, childrenKey } = props;
 
     if (!Array.isArray(nodes) || nodes.length === 0) {
       return;
@@ -423,7 +428,7 @@ class Dropdown extends React.Component<Props, State> {
       if (parentNode) {
         this.nodes[refKey].parentNode = parentNode;
       }
-      this.flattenNodes(node[childrenKey], refKey, this.nodes[refKey]);
+      this.flattenNodes(node[childrenKey], props, refKey, this.nodes[refKey]);
     });
   }
 
