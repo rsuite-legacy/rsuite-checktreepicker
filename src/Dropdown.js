@@ -109,7 +109,7 @@ class Dropdown extends React.Component<Props, State> {
     this.isControlled =
       'value' in props && 'onChange' in props && props.onChange;
     const { data } = props;
-    const nextValue = this.getValue();
+    const nextValue = this.getValue(props);
     this.flattenNodes(data, props);
     this.unserializeLists({
       check: nextValue,
@@ -120,7 +120,7 @@ class Dropdown extends React.Component<Props, State> {
       // data: [],
       selectedValues: nextValue,
       searchKeyword: '',
-      data: this.getFilterData('', data),
+      data: this.getFilterData('', data, props),
       activeNode: null,
     };
   }
@@ -155,8 +155,8 @@ class Dropdown extends React.Component<Props, State> {
     }
   }
 
-  getValue() {
-    const { value, defaultValue } = this.props;
+  getValue(props: Props) {
+    const { value, defaultValue } = props;
     if (value && value.length) {
       return value;
     }
@@ -196,8 +196,8 @@ class Dropdown extends React.Component<Props, State> {
     return false;
   }
 
-  getFilterData(searchKeyword: string = '', data: Array<any>) {
-    const { labelKey } = this.props;
+  getFilterData(searchKeyword: string = '', data: Array<any>, props?: Props = this.props) {
+    const { labelKey } = props;
     const treeData = _.cloneDeep(data);
     const setVisible = (nodes = []) =>
       nodes.forEach((item: Object) => {
