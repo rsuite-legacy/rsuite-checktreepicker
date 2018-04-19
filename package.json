@@ -1,6 +1,6 @@
 {
   "name": "rsuite-checktreepicker",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Rsuite Check Tree Picker",
   "main": "lib/index.js",
   "directories": {
@@ -51,9 +51,8 @@
   "homepage": "http://rsuitejs.com/rsuite-checktreepicker",
   "dependencies": {
     "classnames": "^2.2.5",
-    "dom-lib": "^0.2.3",
+    "dom-lib": "^1.0.0",
     "lodash": "^4.17.4",
-    "prop-types": "^15.5.10",
     "react-addons-shallow-compare": "^15.6.2",
     "rsuite-intl": "^1.0.1"
   },
