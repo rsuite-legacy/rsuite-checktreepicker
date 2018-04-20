@@ -147,6 +147,10 @@ class Dropdown extends React.Component<Props, State> {
       });
     }
     if (!_.isEqual(value, this.props.value)) {
+      this.flattenNodes(nextProps.data);
+      this.unserializeLists({
+        check: nextProps.value,
+      });
       this.setState({
         selectedValues: value,
       });
@@ -432,10 +436,9 @@ class Dropdown extends React.Component<Props, State> {
     nodes.forEach((node, index) => {
       const refKey = `${ref}-${index}`;
       node.refKey = refKey;
-      this.nodes[refKey] = {};
       this.nodes[refKey] = {
-        labelKey: node[labelKey],
-        valueKey: node[valueKey],
+        [labelKey]: node[labelKey],
+        [valueKey]: node[valueKey],
         expand: this.getExpandState(node),
         disabledCheckbox: this.getDisabledCheckboxState(node),
       };
