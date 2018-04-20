@@ -126,11 +126,9 @@ class Dropdown extends React.Component<Props, State> {
     const { data } = this.props;
     const nextValue = this.getValue(this.props);
     this.flattenNodes(data);
-    this.unserializeLists(
-      {
-        check: nextValue,
-      },
-    );
+    this.unserializeLists({
+      check: nextValue,
+    });
     this.setState({
       data: this.getFilterData('', data),
     });
@@ -434,9 +432,10 @@ class Dropdown extends React.Component<Props, State> {
     nodes.forEach((node, index) => {
       const refKey = `${ref}-${index}`;
       node.refKey = refKey;
+      this.nodes[refKey] = {};
       this.nodes[refKey] = {
-        label: node[labelKey],
-        value: node[valueKey],
+        labelKey: node[labelKey],
+        valueKey: node[valueKey],
         expand: this.getExpandState(node),
         disabledCheckbox: this.getDisabledCheckboxState(node),
       };
@@ -552,7 +551,6 @@ class Dropdown extends React.Component<Props, State> {
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNode: Object, layer: number) => {
-    const { data } = this.state;
     const { onChange, onSelect, cascade } = this.props;
     this.toggleChecked(activeNode, activeNode.check, cascade);
     // const formattedNodes = this.getFormattedNodes(data);
