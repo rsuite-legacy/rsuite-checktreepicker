@@ -84,6 +84,7 @@ type State = {
   selectedValues: Array<any>,
   searchKeyword: string,
   data: Array<any>,
+  isSomeNodeHasChildren: boolean,
 };
 
 class Dropdown extends React.Component<Props, State> {
@@ -119,6 +120,7 @@ class Dropdown extends React.Component<Props, State> {
       selectedValues: nextValue,
       searchKeyword: '',
       activeNode: null,
+      isSomeNodeHasChildren: this.isSomeNodeHasChildren(props.data),
     };
   }
 
@@ -144,6 +146,7 @@ class Dropdown extends React.Component<Props, State> {
       });
       this.setState({
         data: this.getFilterData(searchKeyword, data),
+        isSomeNodeHasChildren: this.isSomeNodeHasChildren(data),
       });
     }
     if (!_.isEqual(value, this.props.value)) {
@@ -377,6 +380,16 @@ class Dropdown extends React.Component<Props, State> {
       };
     }
     return {};
+  }
+
+  /**
+   * 判断第一层节点是否存在有children的节点
+   * @param {*} data
+   */
+  isSomeNodeHasChildren(data: Array<any>) {
+    return data.some((node: Object) => {
+      return node.children;
+    });
   }
 
   shouldDisplay(label: any, searchKeyword: string) {
@@ -795,12 +808,15 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   renderCheckTree() {
-    const { data } = this.state;
+    const { data, isSomeNodeHasChildren } = this.state;
     const { onScroll } = this.props;
     // 树节点的层级
     let layer = 0;
     const { className, height } = this.props;
     const treeViewClass = classNames(this.addPrefix('view'), className, {});
+    const classes = classNames(treeViewClass, {
+      'without-children': !isSomeNodeHasChildren,
+    });
     const formattedNodes = this.state.formattedNodes.length
       ? this.state.formattedNodes
       : this.getFormattedNodes(data);
@@ -821,7 +837,7 @@ class Dropdown extends React.Component<Props, State> {
         ref={ref => {
           this.treeView = ref;
         }}
-        className={treeViewClass}
+        className={classes}
         style={styles}
         onScroll={onScroll}
         onKeyDown={this.handleKeyDown}
