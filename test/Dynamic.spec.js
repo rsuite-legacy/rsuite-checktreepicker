@@ -65,7 +65,7 @@ describe('ChectTree test suite', () => {
   it('newData should be load after 2s', async () => {
     fullRender.find(`.${namespace}-toggle`).simulate('click');
     document
-      .querySelector(`div[data-ref="0-0-1-1"]  > .${expandIconCls}`)
+      .querySelector(`div[data-ref="0-4"]  > .${expandIconCls}`)
       .click();
     const activeNode = mockOnExpand.mock.calls[0][0];
     const layer = mockOnExpand.mock.calls[0][1];
