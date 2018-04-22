@@ -6,7 +6,7 @@ class SimplePicker extends React.Component {
     super(props);
     this.state = {
       data: [],
-      selectedValues: ['Master', 'Maya']
+      selectedValues: ['Dave', 'Maya']
     };
   }
 
@@ -38,6 +38,7 @@ class SimplePicker extends React.Component {
           defaultExpandAll
           height={320}
           data={data}
+          cascade={false}
           value={selectedValues}
           onOpen={this.handleOpen}
           onSelect={(activeNode, layer) => {

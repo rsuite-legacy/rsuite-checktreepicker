@@ -1,12 +1,12 @@
 import React from 'react';
-import { shallow, mount, render } from 'enzyme';
+import Enzyme, { shallow, mount, render } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import { constants } from 'rsuite-utils/lib/Picker';
 import Picker from '../src';
 import treeData from '../docs/data/treeData';
-import { delay } from './utils';
 
+Enzyme.configure({ adapter: new Adapter() });
 const { namespace } = constants;
-
 const classPrefix = `${namespace}-checktree`;
 const pickerClass = `.${classPrefix}`;
 const menuClass = `.${classPrefix}-menu`;
@@ -45,7 +45,6 @@ describe('rsutie-checktrepicker test suite', () => {
     expect(document.querySelectorAll(menuClass).length).toBe(1);
   });
 
-
   // it('when input  test word, the tree should be filter 20 nodes  ', () => {
   //   fullRender.find(`.${namespace}-toggle`).simulate('click');
   //   expect(document.querySelectorAll(menuClass).length).toBe(1);
@@ -72,8 +71,6 @@ describe('rsutie-checktrepicker test suite', () => {
       disabled: true,
     };
     const picker = mount(<Picker {...props} />);
-    expect(
-      picker.find(disabledClass).length,
-    ).toBe(1);
+    expect(picker.find(disabledClass).length).toBe(1);
   });
 });

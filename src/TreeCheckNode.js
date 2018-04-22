@@ -137,6 +137,7 @@ class TreeCheckNode extends React.Component<Props> {
       <div
         role="button"
         tabIndex="-1"
+        data-ref={nodeData.refKey}
         className={`${classPrefix}-node-expand-icon-wrapper`}
         onClick={this.handleTreeToggle}
       >

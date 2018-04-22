@@ -1,16 +1,20 @@
 import React from 'react';
-import { shallow, render, mount } from 'enzyme';
+import Enzyme, { shallow, render, mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import CheckTree from '../src/index';
 import treeData from '../docs/data/treeData';
+import { treeNodeCheckedCls } from './utils';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const setup = () => {
   const state = {
-    activeNode: {}
+    activeNode: {},
   };
   const mockFn = {
-    onExpand: (activeNode) => {
+    onExpand: activeNode => {
       return activeNode;
-    }
+    },
   };
 
   const props = {
@@ -20,7 +24,7 @@ const setup = () => {
     inline: true,
     height: 400,
     defaultValue: ['Maya'],
-    onExpand: mockFn.onExpand
+    onExpand: mockFn.onExpand,
   };
 
   const wrapper = shallow(<CheckTree {...props} />);
@@ -31,7 +35,7 @@ const setup = () => {
     state,
     wrapper,
     staticRender,
-    fullRender
+    fullRender,
   };
 };
 
@@ -40,15 +44,15 @@ describe('ChectTree test suite', () => {
 
   // test active node
   it('Node Maya and all children nodes should be active', () => {
-    expect(staticRender.find('.tree-node.checked').length).toBe(12);
+    expect(staticRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
   });
 
   // test select node`
   it('test toggle click Dave node', () => {
-    fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
-    expect(fullRender.find('.tree-node.checked').length).toBe(0);
+    fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
+    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(0);
 
-    fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
-    expect(fullRender.find('.tree-node.checked').length).toBe(12);
+    fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
+    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
   });
 });

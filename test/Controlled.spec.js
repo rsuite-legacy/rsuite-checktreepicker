@@ -1,9 +1,11 @@
 import React from 'react';
-import { shallow, render, mount } from 'enzyme';
+import Enzyme, { shallow, render, mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import CheckTree from '../src/index';
 import treeData from '../docs/data/treeData';
-import delay from './utils';
+import { delay, treeNodeCheckedCls } from './utils';
 
+Enzyme.configure({ adapter: new Adapter() });
 const mockOnExpand = jest.fn().mockImplementation(activeNode => activeNode);
 const mockOnSelect = jest.fn().mockImplementation(activeNode => activeNode);
 const mockOnChange = jest.fn().mockImplementation(values => values);
@@ -18,7 +20,7 @@ const setup = () => {
     value: ['Maya'],
     onExpand: mockOnExpand,
     onSelect: mockOnSelect,
-    onChange: mockOnChange
+    onChange: mockOnChange,
   };
 
   const wrapper = shallow(<CheckTree {...props} />);
@@ -27,7 +29,7 @@ const setup = () => {
   return {
     wrapper,
     staticRender,
-    fullRender
+    fullRender,
   };
 };
 
@@ -36,27 +38,27 @@ describe('ChectTree test suite', () => {
 
   // test active node
   it('Node Maya and all children nodes should be active', () => {
-    expect(staticRender.find('.tree-node.checked').length).toBe(12);
+    expect(staticRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
   });
 
   // test select node`
   it('test controlled tree', async () => {
     let values = [];
-    fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
+    fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
     values = mockOnChange.mock.calls[0];
     fullRender.setState({
-      value: values
+      value: values,
     });
 
     await delay(500);
-    expect(fullRender.find('.tree-node.checked').length).toBe(0);
+    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(0);
 
-    fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
+    fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
     values = mockOnChange.mock.calls[1];
     fullRender.setState({
-      value: values
+      value: values,
     });
     await delay(500);
-    expect(fullRender.find('.tree-node.checked').length).toBe(12);
+    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
   });
 });
