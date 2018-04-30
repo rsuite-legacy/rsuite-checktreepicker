@@ -38,6 +38,7 @@ type PlacementEighPoints =
 
 type Props = {
   className?: string,
+  menuClassName?: string,
   height?: number,
   data: Array<any>,
   defaultValue?: Array<any>,
@@ -812,9 +813,9 @@ class Dropdown extends React.Component<Props, State> {
     const { onScroll } = this.props;
     // 树节点的层级
     let layer = 0;
-    const { className, height } = this.props;
-    const treeViewClass = classNames(this.addPrefix('view'), className, {});
-    const classes = classNames(treeViewClass, {
+    const { menuClassName, height } = this.props;
+    const treeViewClass = classNames(this.addPrefix('view'), {});
+    const classes = classNames(treeViewClass, menuClassName, {
       'without-children': !isSomeNodeHasChildren,
     });
     const formattedNodes = this.state.formattedNodes.length
