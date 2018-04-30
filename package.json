@@ -1,18 +1,16 @@
 {
   "name": "rsuite-checktreepicker",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Rsuite Check Tree Picker",
   "main": "lib/index.js",
   "directories": {
     "test": "test"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "jsx"
-    ],
+    "moduleFileExtensions": ["js", "jsx"],
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
+        "<rootDir>/__mocks__/fileMock.js",
       ".*\\.(css|less|scss)$": "<rootDir>/__mocks__/styleMock.js"
     },
     "transform": {
@@ -22,7 +20,8 @@
     "collectCoverage": true
   },
   "scripts": {
-    "dev": "NODE_ENV=development webpack-dev-server  --inline --progress --colors --port 3100 --host 0.0.0.0 --devtool source-map ",
+    "dev":
+      "NODE_ENV=development webpack-dev-server  --inline --progress --colors --port 3100 --host 0.0.0.0 --devtool source-map ",
     "docs": "rm -rf assets &&  NODE_ENV=production webpack ",
     "build": "rm -rf lib  && babel src --out-dir lib && cp -R src/less lib",
     "publish-docs": "node docs/gh-pages.js",
@@ -32,20 +31,15 @@
     "release": "npm publish",
     "test": "jest",
     "coverage": "jest --colors --coverage",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -w -r 0"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:rsuite/rsuite-checktreepicker.git"
   },
-  "keywords": [
-    "rsuite"
-  ],
-  "files": [
-    "lib",
-    "src",
-    "CHANGELOG.md"
-  ],
+  "keywords": ["rsuite"],
+  "files": ["lib", "src", "CHANGELOG.md"],
   "author": "superman",
   "license": "MIT",
   "homepage": "http://rsuitejs.com/rsuite-checktreepicker",
