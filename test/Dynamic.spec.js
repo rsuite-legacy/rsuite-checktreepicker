@@ -45,6 +45,7 @@ const setup = () => {
     data: treeData,
     value: ['Dave'],
     defaultExpandAll: true,
+    inline: true,
     onExpand: mockOnExpand,
     onChange: mockOnChange,
     onSelect: mockOnSelect,
@@ -63,10 +64,9 @@ const setup = () => {
 describe('ChectTree test suite', () => {
   const { fullRender } = setup();
   it('newData should be load after 2s', async () => {
-    fullRender.find(`.${namespace}-toggle`).simulate('click');
-    document
-      .querySelector(`div[data-ref="0-4"]  > .${expandIconCls}`)
-      .click();
+    fullRender
+      .find(`div[data-ref="0-4"]  > .${expandIconCls}`)
+      .simulate('click');
     const activeNode = mockOnExpand.mock.calls[0][0];
     const layer = mockOnExpand.mock.calls[0][1];
     const nextTreeData = cloneDeep(treeData);
