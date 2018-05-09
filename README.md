@@ -1,5 +1,5 @@
 [![Travis](https://img.shields.io/travis/rsuite/rsuite-checktreepicker.svg)](https://travis-ci.org/rsuite/rsuite-checktreepicker)
-[![npm](https://img.shields.io/npm/v/rsuite-checktreepicker/version2.x.svg)](https://www.npmjs.com/package/rsuite-checktreepicker)
+[![npm](https://img.shields.io/npm/v/rsuite-checktreepicker.svg)](https://www.npmjs.com/package/rsuite-checktreepicker)
 [![Coverage Status](https://coveralls.io/repos/github/rsuite/rsuite-checktreepicker/badge.svg?branch=master)](https://coveralls.io/github/rsuite/rsuite-checktreepicker?branch=master)
 
 # rsuite-checktreepicker
