@@ -39,6 +39,9 @@ type PlacementEighPoints =
 type Props = {
   className?: string,
   menuClassName?: string,
+  toggleComponentClass?: React.ElementType,
+  block?: boolean,
+  style?: object,
   height?: number,
   data: Array<any>,
   defaultValue?: Array<any>,
@@ -882,6 +885,9 @@ class Dropdown extends React.Component<Props, State> {
       onClose,
       renderValue,
       valueKey,
+      block,
+      style,
+      toggleComponentClass,
       ...rest
     } = this.props;
     const { hasValue } = this.state;
@@ -891,6 +897,7 @@ class Dropdown extends React.Component<Props, State> {
     const classes = classNames(
       classPrefix,
       {
+        [this.addPrefix('block')]: block,
         [this.addPrefix('has-value')]: !!selectedValues,
         [this.addPrefix('disabled')]: disabled,
       },
@@ -926,6 +933,7 @@ class Dropdown extends React.Component<Props, State> {
           {...unhandled}
           onKeyDown={this.handleToggleKeyDown}
           className={classes}
+          style={style}
           tabIndex={-1}
           role="menu"
           ref={ref => {
@@ -947,8 +955,9 @@ class Dropdown extends React.Component<Props, State> {
           >
             <Toggle
               onClean={this.handleClean}
+              componentClass={toggleComponentClass}
               cleanable={cleanable && !disabled}
-              hasValue={!!selectedValues && !!selectedValues.length}
+              hasValue={hasValue}
             >
               {placeholderText || <FormattedMessage id="placeholder" />}
             </Toggle>

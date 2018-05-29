@@ -3,7 +3,12 @@ import Enzyme, { shallow, render, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import CheckTree from '../src/index';
 import treeData from '../docs/data/treeData';
-import { delay, treeNodeCheckedCls, placeholderClass } from './utils';
+import {
+  delay,
+  treeNodeCheckedCls,
+  placeholderClass,
+  toggleClass,
+} from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -73,5 +78,16 @@ describe('ChectTree test suite', () => {
       .find(`${placeholderClass} > span`)
       .text();
     expect(text).toBe('Please Select');
+  });
+
+  it('when `toggleComponentClass` set to `button`, Toggle element type should be `bottuon`', () => {
+    const newProps = {
+      data: treeData,
+      toggleComponentClass: 'button',
+    };
+    const text = render(<CheckTree {...newProps} />).find(
+      `${toggleClass}[role="button"]`,
+    );
+    expect(text.length).toBe(1);
   });
 });

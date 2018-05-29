@@ -13,3 +13,4 @@ export const nodeChildrenOpenCls = `${treeViewCls}-open`;
 export const expandIconWrapperCls = `${treeViewCls}-node-expand-icon-wrapper`;
 export const expandIconCls = `${treeViewCls}-node-expand-icon`;
 export const placeholderClass = `.${namespace}-toggle-placeholder`;
+export const toggleClass = `.${namespace}-toggle`;

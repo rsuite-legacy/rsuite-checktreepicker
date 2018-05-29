@@ -32,6 +32,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
   &-checktree-disabled {
     opacity: 0.4;
   }
@@ -367,5 +368,14 @@
         }
       }
     }
+  }
+  &-checktree-block {
+    display: block;
+  }
+
+  &-checktree-block &-toggle {
+    display: block;
+    width: 100%;
+    text-align: left;
   }
 }

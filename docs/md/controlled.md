@@ -36,9 +36,10 @@ class SimplePicker extends React.Component {
       <div className="example-item">
         <Picker
           defaultExpandAll
+          block
           height={320}
           data={data}
-          cascade={false}
+          toggleComponentClass="button"
           value={selectedValues}
           onOpen={this.handleOpen}
           onSelect={(activeNode, layer) => {

@@ -7,10 +7,12 @@
     "test": "test"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "jsx"],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-        "<rootDir>/__mocks__/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
       ".*\\.(css|less|scss)$": "<rootDir>/__mocks__/styleMock.js"
     },
     "transform": {
@@ -20,8 +22,7 @@
     "collectCoverage": true
   },
   "scripts": {
-    "dev":
-      "NODE_ENV=development webpack-dev-server  --inline --progress --colors --port 3100 --host 0.0.0.0 --devtool source-map ",
+    "dev": "NODE_ENV=development webpack-dev-server  --inline --progress --colors --port 3100 --host 0.0.0.0 --devtool source-map ",
     "docs": "rm -rf assets &&  NODE_ENV=production webpack ",
     "build": "rm -rf lib  && babel src --out-dir lib && cp -R src/less lib",
     "publish-docs": "node docs/gh-pages.js",
@@ -38,8 +39,14 @@
     "type": "git",
     "url": "git@github.com:rsuite/rsuite-checktreepicker.git"
   },
-  "keywords": ["rsuite"],
-  "files": ["lib", "src", "CHANGELOG.md"],
+  "keywords": [
+    "rsuite"
+  ],
+  "files": [
+    "lib",
+    "src",
+    "CHANGELOG.md"
+  ],
   "author": "superman",
   "license": "MIT",
   "homepage": "http://rsuitejs.com/rsuite-checktreepicker",
@@ -51,7 +58,7 @@
     "rsuite-intl": "^1.0.1"
   },
   "peerDependencies": {
-    "rsuite-utils": "^1.0.0",
+    "rsuite-utils": ">=1.0.0",
     "react": "^0.14.9 || >=15.3.0",
     "react-dom": "^0.14.9 || >=15.3.0"
   },
@@ -111,7 +118,7 @@
     "rsuite-affix": "^1.0.3",
     "rsuite-docs": "^0.1.11",
     "rsuite-theme": "^2.0.10",
-    "rsuite-utils": "^1.0.0",
+    "rsuite-utils": "^1.0.2",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.8",
     "uuid": "^2.0.3",
