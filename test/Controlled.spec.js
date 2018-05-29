@@ -3,9 +3,10 @@ import Enzyme, { shallow, render, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import CheckTree from '../src/index';
 import treeData from '../docs/data/treeData';
-import { delay, treeNodeCheckedCls } from './utils';
+import { delay, treeNodeCheckedCls, placeholderClass } from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
+
 const mockOnExpand = jest.fn().mockImplementation(activeNode => activeNode);
 const mockOnSelect = jest.fn().mockImplementation(activeNode => activeNode);
 const mockOnChange = jest.fn().mockImplementation(values => values);
@@ -27,6 +28,7 @@ const setup = () => {
   const staticRender = render(<CheckTree {...props} />);
   const fullRender = mount(<CheckTree {...props} />);
   return {
+    props,
     wrapper,
     staticRender,
     fullRender,
@@ -34,7 +36,7 @@ const setup = () => {
 };
 
 describe('ChectTree test suite', () => {
-  const { staticRender, fullRender } = setup();
+  const { props, staticRender, fullRender } = setup();
 
   // test active node
   it('Node Maya and all children nodes should be active', () => {
@@ -60,5 +62,16 @@ describe('ChectTree test suite', () => {
     });
     await delay(500);
     expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
+  });
+
+  it('when value does not in data, Placeholder shoube `Please Select`', () => {
+    const newProps = {
+      data: treeData,
+      value: ['errorValue'],
+    };
+    const text = render(<CheckTree {...newProps} />)
+      .find(`${placeholderClass} > span`)
+      .text();
+    expect(text).toBe('Please Select');
   });
 });
