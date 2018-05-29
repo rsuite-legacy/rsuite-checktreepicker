@@ -86,6 +86,7 @@ type State = {
   searchKeyword: string,
   data: Array<any>,
   isSomeNodeHasChildren: boolean,
+  hasValue: boolean,
 };
 
 class Dropdown extends React.Component<Props, State> {
@@ -122,6 +123,7 @@ class Dropdown extends React.Component<Props, State> {
       searchKeyword: '',
       activeNode: null,
       isSomeNodeHasChildren: this.isSomeNodeHasChildren(props.data),
+      hasValue: true,
     };
   }
 
@@ -134,6 +136,7 @@ class Dropdown extends React.Component<Props, State> {
     });
     this.setState({
       data: this.getFilterData('', data),
+      hasValue: this.hasValue(),
     });
   }
 
@@ -148,6 +151,7 @@ class Dropdown extends React.Component<Props, State> {
       this.setState({
         data: this.getFilterData(searchKeyword, data),
         isSomeNodeHasChildren: this.isSomeNodeHasChildren(data),
+        hasValue: this.hasValue(),
       });
     }
     if (!_.isEqual(value, this.props.value)) {
@@ -157,6 +161,7 @@ class Dropdown extends React.Component<Props, State> {
       });
       this.setState({
         selectedValues: value,
+        hasValue: this.hasValue(value),
       });
     }
 
@@ -384,6 +389,18 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   /**
+   * 判断传入的 value 是否存在于data 中
+   * @param {*} values
+   */
+  hasValue(values: Array<any> = this.state.selectedValues) {
+    const { valueKey } = this.props;
+    const selectedValues = Object.keys(this.nodes)
+      .map((refKey: string) => this.nodes[refKey][valueKey])
+      .filter((item: any) => values.some(v => _.isEqual(v, item)));
+    return !!selectedValues.length;
+  }
+
+  /**
    * 判断第一层节点是否存在有children的节点
    * @param {*} data
    */
@@ -590,6 +607,7 @@ class Dropdown extends React.Component<Props, State> {
           activeNode,
           // formattedNodes,
           selectedValues,
+          hasValue: true,
         },
         () => {
           onChange && onChange(selectedValues);
@@ -866,6 +884,7 @@ class Dropdown extends React.Component<Props, State> {
       valueKey,
       ...rest
     } = this.props;
+    const { hasValue } = this.state;
 
     const selectedValues = this.serializeList('check');
 
@@ -880,10 +899,10 @@ class Dropdown extends React.Component<Props, State> {
     );
 
     let placeholderText = placeholder;
-    if (selectedValues && selectedValues.length) {
+    if (hasValue) {
       placeholderText = `${selectedValues.length} selected`;
     }
-    if (renderValue && selectedValues && selectedValues.length) {
+    if (renderValue && hasValue) {
       const checkItems = [];
       Object.keys(this.nodes).map((refKey: string) => {
         const node = this.nodes[refKey];
