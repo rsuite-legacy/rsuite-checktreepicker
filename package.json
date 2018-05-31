@@ -118,7 +118,7 @@
     "rsuite-affix": "^1.0.3",
     "rsuite-docs": "^0.1.11",
     "rsuite-theme": "^2.0.10",
-    "rsuite-utils": "^1.0.2",
+    "rsuite-utils": "^1.0.3",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.8",
     "uuid": "^2.0.3",

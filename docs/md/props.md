@@ -3,6 +3,8 @@
 | classPrefix            | string                                    |               | className 的前缀                |
 | className              | string                                    |               | Picker 的自定义 className       |
 | menuClassName          | string                                    |               | Picker Menu 的自定义 className  |
+| toggleComponentClass   | string                                    |               | Picker toggle 的自定义组件名称  |
+| block                  | boolean                                   | false         | 是否显示为块级元素              |
 | style                  | object                                    |               | style 样式                      |
 | inline                 | boolean                                   | false         | 是否只使用 checktree            |
 | value                  | array                                     |               | 当前选中的值                    |

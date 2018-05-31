@@ -7,7 +7,7 @@ import {
   delay,
   treeNodeCheckedCls,
   placeholderClass,
-  toggleClass,
+  customToggleClass,
 } from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -86,7 +86,7 @@ describe('ChectTree test suite', () => {
       toggleComponentClass: 'button',
     };
     const text = render(<CheckTree {...newProps} />).find(
-      `${toggleClass}[role="button"]`,
+      `${customToggleClass}[role="button"]`,
     );
     expect(text.length).toBe(1);
   });
