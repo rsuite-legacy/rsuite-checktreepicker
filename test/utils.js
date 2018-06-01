@@ -15,3 +15,4 @@ export const expandIconCls = `${treeViewCls}-node-expand-icon`;
 export const placeholderClass = `.${namespace}-toggle-placeholder`;
 export const toggleClass = `.${namespace}-toggle`;
 export const customToggleClass = `.${namespace}-toggle-custom`;
+export const toggleCleanClass = `.${namespace}-toggle-clean`;

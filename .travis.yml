@@ -35,7 +35,7 @@ jobs:
         api_key: $NPM_KEY
         skip-cleanup: true
         on:
-          branch: master
+          tag: true
 
 # You can specify the order for stages
 stages:

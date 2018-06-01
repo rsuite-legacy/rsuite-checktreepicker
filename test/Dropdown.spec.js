@@ -4,6 +4,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import { constants } from 'rsuite-utils/lib/Picker';
 import Picker from '../src';
 import treeData from '../docs/data/treeData';
+import { toggleCleanClass, toggleClass } from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
 const { namespace } = constants;
@@ -11,7 +12,6 @@ const classPrefix = `${namespace}-checktree`;
 const pickerClass = `.${classPrefix}`;
 const menuClass = `.${classPrefix}-menu`;
 const placeholderClass = `.${namespace}-toggle-placeholder`;
-const searchInputClass = `.${namespace}-search-bar-input`;
 const disabledClass = `.${classPrefix}-disabled`;
 const setup = () => {
   const props = {
@@ -72,5 +72,17 @@ describe('rsutie-checktrepicker test suite', () => {
     };
     const picker = mount(<Picker {...props} />);
     expect(picker.find(disabledClass).length).toBe(1);
+  });
+
+  it('when click clean icon, Placeholder should be `Please Select`', () => {
+    const props = {
+      data: treeData,
+      value: ['Master'],
+    };
+    const picker = mount(<Picker {...props} />);
+
+    picker.find(`${toggleCleanClass}`).simulate('click');
+    const text = picker.render().find(`${toggleClass} > span`).text();
+    expect(text).toBe('Please Select');
   });
 });

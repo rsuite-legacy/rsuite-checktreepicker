@@ -704,6 +704,7 @@ class Dropdown extends React.Component<Props, State> {
     const { onChange } = this.props;
     this.setState({
       selectedValues: [],
+      hasValue: false,
     });
     this.unserializeLists({
       check: [],
@@ -930,7 +931,6 @@ class Dropdown extends React.Component<Props, State> {
     return !inline ? (
       <IntlProvider locale={locale}>
         <div
-          {...unhandled}
           onKeyDown={this.handleToggleKeyDown}
           className={classes}
           style={style}
@@ -954,6 +954,7 @@ class Dropdown extends React.Component<Props, State> {
             speaker={this.renderDropdownMenu()}
           >
             <Toggle
+              {...unhandled}
               onClean={this.handleClean}
               componentClass={toggleComponentClass}
               cleanable={cleanable && !disabled}

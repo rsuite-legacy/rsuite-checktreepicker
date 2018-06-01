@@ -171,7 +171,8 @@
       }
     }
   }
-  &-toggle {
+  &-toggle,
+  &-toggle-custom {
     position: relative;
     overflow: hidden;
     background-color: @container-bg;
@@ -270,7 +271,6 @@
           height: @check-box-size;
           background: #fff;
           border: @container-border;
-
         }
         &:after {
           font-family: RSuiteIconFont;
@@ -373,7 +373,8 @@
     display: block;
   }
 
-  &-checktree-block &-toggle {
+  &-checktree-block &-toggle,
+  &-checktree-block &-toggle-custom {
     display: block;
     width: 100%;
     text-align: left;

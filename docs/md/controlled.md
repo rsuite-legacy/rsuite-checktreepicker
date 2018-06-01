@@ -39,6 +39,7 @@ class SimplePicker extends React.Component {
           block
           height={320}
           data={data}
+          appearence="primary"
           toggleComponentClass="button"
           value={selectedValues}
           onOpen={this.handleOpen}
