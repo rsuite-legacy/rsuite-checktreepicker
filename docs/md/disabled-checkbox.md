@@ -17,13 +17,18 @@ class DisabledPicker extends React.Component {
       <div className="example-item">
         <Picker
           disabledCheckboxValues={['Marty']}
+          value={selectedValues}
           defaultExpandAll
           height={320}
           data={data}
           onSelect={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}
-          onChange={(values)=> console.log(values)}
+          onChange={(values)=>{
+            this.setState({
+              selectedValues: values
+            })
+          }}
         />
       </div>
     );
