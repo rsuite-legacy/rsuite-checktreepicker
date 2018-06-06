@@ -11,6 +11,7 @@ import {
   reactToString,
   getUnhandledProps,
   prefix,
+  createChainedFunction
 } from 'rsuite-utils/lib/utils';
 
 import {
@@ -26,7 +27,7 @@ import { CHECK_STATE } from './constants';
 const { namespace } = constants;
 
 type DefaultEvent = SyntheticEvent<*>;
-type PlacementEighPoints =
+type Placement =
   | 'bottomLeft'
   | 'bottomRight'
   | 'topLeft'
@@ -34,12 +35,19 @@ type PlacementEighPoints =
   | 'leftTop'
   | 'rightTop'
   | 'leftBottom'
-  | 'rightBottom';
+  | 'rightBottom'
+  | 'auto'
+  | 'autoVerticalLeft'
+  | 'autoVerticalRight'
+  | 'autoHorizontalTop'
+  | 'autoHorizontalBottom';
 
 type Props = {
   className?: string,
   menuClassName?: string,
   toggleComponentClass?: React.ElementType,
+  container?: HTMLElement | (() => HTMLElement),
+  containerPadding?: number,
   block?: boolean,
   style?: object,
   height?: number,
@@ -70,6 +78,12 @@ type Props = {
   onExpand?: (activeNode: any, labyer: number) => void,
   onSelect?: (activeNode: any, layer: number, values: any) => void,
   onScroll?: (event: DefaultEvent) => void,
+  onEnter?: Function,
+  onEntering?: Function,
+  onEntered?: Function,
+  onExit?: Function,
+  onExiting?: Function,
+  onExited?: Function,
   renderTreeNode?: (nodeData: Object) => React.Node,
   renderTreeIcon?: (nodeData: Object) => React.Node,
   renderValue?: (
@@ -79,7 +93,7 @@ type Props = {
   ) => React.Node,
   renderMenu?: (menu: string | React.Node) => React.Node,
   renderExtraFooter?: () => React.Node,
-  placement?: PlacementEighPoints,
+  placement?: Placement,
 };
 
 type State = {
@@ -742,6 +756,17 @@ class Dropdown extends React.Component<Props, State> {
     );
   }
 
+  handleOnOpen = () => {
+    const { onOpen } = this.props;
+    onOpen && onOpen();
+  };
+
+  handleOnClose = () => {
+    const { onClose } = this.props;
+    onClose && onClose();
+  };
+
+
   renderNode(node: Object, index: number, layer: number, classPrefix: string) {
     const { activeNode } = this.state;
     const {
@@ -884,6 +909,14 @@ class Dropdown extends React.Component<Props, State> {
       cleanable,
       onOpen,
       onClose,
+      container,
+      containerPadding,
+      onEnter,
+      onEntering,
+      onEntered,
+      onExit,
+      onExiting,
+      onExited,
       renderValue,
       valueKey,
       block,
@@ -949,8 +982,14 @@ class Dropdown extends React.Component<Props, State> {
             disabled={disabled}
             trigger="click"
             placement={placement}
-            onEntered={onOpen}
-            onExited={onClose}
+            onEnter={onEnter}
+            onEntering={onEntering}
+            onEntered={createChainedFunction(this.handleOnOpen, onEntered)}
+            onExit={onExit}
+            onExiting={onExiting}
+            onExited={createChainedFunction(this.handleOnClose, onExited)}
+            container={container}
+            containerPadding={containerPadding}
             speaker={this.renderDropdownMenu()}
           >
             <Toggle
