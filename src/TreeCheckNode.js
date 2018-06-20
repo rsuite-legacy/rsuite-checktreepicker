@@ -1,10 +1,9 @@
 // @flow
 import * as React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
 import shallowCompare from 'react-addons-shallow-compare';
 import { hasClass } from 'dom-lib';
-import { prefix } from 'rsuite-utils/lib/utils';
+import { prefix, shallowEqual } from 'rsuite-utils/lib/utils';
 import { CHECK_STATE } from './constants';
 
 type CheckState =
@@ -50,7 +49,7 @@ class TreeCheckNode extends React.Component<Props> {
   ) {
     const { onRenderTreeIcon, nodeData } = this.props;
     if (typeof func === 'function' && typeof onRenderTreeIcon === 'function') {
-      return _.isEqual(func(params), onRenderTreeIcon(nodeData));
+      return shallowEqual(func(params), onRenderTreeIcon(nodeData));
     }
     return false;
   }
@@ -61,7 +60,7 @@ class TreeCheckNode extends React.Component<Props> {
   ) {
     const { onRenderTreeNode, nodeData } = this.props;
     if (typeof func === 'function' && typeof onRenderTreeNode === 'function') {
-      return _.isEqual(func(params), onRenderTreeNode(nodeData));
+      return shallowEqual(func(params), onRenderTreeNode(nodeData));
     }
     return false;
   }

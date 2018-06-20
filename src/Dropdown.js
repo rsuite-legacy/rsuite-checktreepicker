@@ -11,7 +11,9 @@ import {
   reactToString,
   getUnhandledProps,
   prefix,
-  createChainedFunction
+  createChainedFunction,
+  shallowEqual,
+  shallowEqualArray,
 } from 'rsuite-utils/lib/utils';
 
 import {
@@ -160,7 +162,7 @@ class Dropdown extends React.Component<Props, State> {
   componentWillReceiveProps(nextProps: Props) {
     const { searchKeyword, selectedValues } = this.state;
     const { value, data, cascade } = nextProps;
-    if (!_.isEqual(this.props.data, data)) {
+    if (!shallowEqualArray(this.props.data, data)) {
       this.flattenNodes(nextProps.data);
       this.unserializeLists({
         check: nextProps.value,
@@ -171,7 +173,7 @@ class Dropdown extends React.Component<Props, State> {
         hasValue: this.hasValue(),
       });
     }
-    if (!_.isEqual(value, this.props.value)) {
+    if (!shallowEqualArray(value, this.props.value)) {
       this.flattenNodes(nextProps.data);
       this.unserializeLists({
         check: nextProps.value,
@@ -183,7 +185,7 @@ class Dropdown extends React.Component<Props, State> {
     }
 
     // cascade 改变时，重新初始化
-    if (!_.isEqual(cascade, this.props.cascade) && cascade) {
+    if (!shallowEqual(cascade, this.props.cascade) && cascade) {
       this.flattenNodes(data);
       this.unserializeLists(
         {
@@ -241,7 +243,8 @@ class Dropdown extends React.Component<Props, State> {
     props?: Props = this.props,
   ) {
     const { labelKey } = props;
-    const treeData = _.cloneDeep(data);
+    const treeData = JSON.parse(JSON.stringify(data));
+    console.log(treeData);
     const setVisible = (nodes = []) =>
       nodes.forEach((item: Object) => {
         item.visible = this.shouldDisplay(item[labelKey], searchKeyword);
@@ -286,7 +289,7 @@ class Dropdown extends React.Component<Props, State> {
       const node = this.nodes[refKey];
       if (
         'parentNode' in node &&
-        _.isEqual(node.parentNode.value, parentNode.value)
+        shallowEqual(node.parentNode.value, parentNode.value)
       ) {
         this.nodes[refKey].check = true;
       }
@@ -333,7 +336,7 @@ class Dropdown extends React.Component<Props, State> {
   getDisabledState(node: Object) {
     const { disabledItemValues = [], valueKey } = this.props;
     return disabledItemValues.some((value: any) =>
-      _.isEqual(this.nodes[node.refKey][valueKey], value),
+      shallowEqual(this.nodes[node.refKey][valueKey], value),
     );
   }
 
@@ -344,7 +347,7 @@ class Dropdown extends React.Component<Props, State> {
   getDisabledCheckboxState(node: Object) {
     const { disabledCheckboxValues = [], valueKey } = this.props;
     return disabledCheckboxValues.some((value: any) =>
-      _.isEqual(node[valueKey], value),
+      shallowEqual(node[valueKey], value),
     );
   }
 
@@ -413,7 +416,7 @@ class Dropdown extends React.Component<Props, State> {
     const { valueKey } = this.props;
     const selectedValues = Object.keys(this.nodes)
       .map((refKey: string) => this.nodes[refKey][valueKey])
-      .filter((item: any) => values.some(v => _.isEqual(v, item)));
+      .filter((item: any) => values.some(v => shallowEqual(v, item)));
     return !!selectedValues.length;
   }
 
@@ -521,7 +524,7 @@ class Dropdown extends React.Component<Props, State> {
           node[listKey] = false;
         }
         lists[listKey].forEach((value: any) => {
-          if (_.isEqual(this.nodes[refKey][valueKey], value)) {
+          if (shallowEqual(this.nodes[refKey][valueKey], value)) {
             this.nodes[refKey][listKey] = true;
           }
         });
@@ -766,7 +769,6 @@ class Dropdown extends React.Component<Props, State> {
     onClose && onClose();
   };
 
-
   renderNode(node: Object, index: number, layer: number, classPrefix: string) {
     const { activeNode } = this.state;
     const {
@@ -786,7 +788,7 @@ class Dropdown extends React.Component<Props, State> {
     const hasNotEmptyChildren =
       children && Array.isArray(children) && children.length > 0;
     const active = activeNode
-      ? _.isEqual(activeNode[valueKey], node[valueKey])
+      ? shallowEqual(activeNode[valueKey], node[valueKey])
       : false;
     const props = {
       value: node[valueKey],
@@ -948,7 +950,9 @@ class Dropdown extends React.Component<Props, State> {
       Object.keys(this.nodes).map((refKey: string) => {
         const node = this.nodes[refKey];
         if (
-          selectedValues.some((value: any) => _.isEqual(node[valueKey], value))
+          selectedValues.some((value: any) =>
+            shallowEqual(node[valueKey], value),
+          )
         ) {
           checkItems.push(node);
         }
