@@ -244,7 +244,6 @@ class Dropdown extends React.Component<Props, State> {
   ) {
     const { labelKey } = props;
     const treeData = JSON.parse(JSON.stringify(data));
-    console.log(treeData);
     const setVisible = (nodes = []) =>
       nodes.forEach((item: Object) => {
         item.visible = this.shouldDisplay(item[labelKey], searchKeyword);
@@ -942,7 +941,7 @@ class Dropdown extends React.Component<Props, State> {
     );
 
     let placeholderText = placeholder;
-    if (hasValue) {
+    if (hasValue && selectedValues.length) {
       placeholderText = `${selectedValues.length} selected`;
     }
     if (renderValue && hasValue) {
