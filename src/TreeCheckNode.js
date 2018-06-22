@@ -1,7 +1,6 @@
 // @flow
 import * as React from 'react';
 import classNames from 'classnames';
-import shallowCompare from 'react-addons-shallow-compare';
 import { hasClass } from 'dom-lib';
 import { prefix, shallowEqual } from 'rsuite-utils/lib/utils';
 import { CHECK_STATE } from './constants';
