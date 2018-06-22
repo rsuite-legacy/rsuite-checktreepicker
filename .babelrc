@@ -6,6 +6,7 @@
     "flow"
   ],
   "plugins": [
+    "transform-remove-console",
     "transform-class-properties",
     "flow-react-proptypes",
     "transform-react-flow-handled-props"
