@@ -53,7 +53,6 @@
     "classnames": "^2.2.5",
     "dom-lib": "^1.0.0",
     "lodash": "^4.17.4",
-    "react-addons-shallow-compare": "^15.6.2",
     "rsuite-intl": "^1.0.1"
   },
   "peerDependencies": {

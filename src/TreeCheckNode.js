@@ -40,7 +40,7 @@ class TreeCheckNode extends React.Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props) {
-    return shallowCompare(this, nextProps);
+    return !shallowEqual(this.props, nextProps);
   }
 
   isEqualRenderTreeIcon(
