@@ -16,6 +16,8 @@
 | disabledItemValues     | array                                     |               | 禁用节点列表                    |
 | disabledCheckboxValues | array                                     |               | 禁用节点的 checkbox 列表        |
 | defaultExpandAll       | bool                                      | false         | 默认展开所有节点                |
+| expandAll              | bool                                      |               | (受控)是否展开所有节点          |
+| searchKeyword          | string                                    |               | 搜索关键词                      |
 | cascade                | bool                                      | false         | checktree 是否级联选择          |
 | locale                 | object                                    |               | 本地语言                        |
 | placeholder            | React.Node                                | Please Select | 占位符                          |
