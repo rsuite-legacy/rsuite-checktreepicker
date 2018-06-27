@@ -124,7 +124,7 @@ class CheckTree extends React.Component<Props, State> {
     cleanable: true,
     placement: 'bottomLeft',
     searchable: true,
-    classPrefix: 'rs-picker-checktree',
+    classPrefix: `${namespace}-checktree`,
     childrenKey: 'children',
     searchKeyword: '',
     disabledItemValues: [],
