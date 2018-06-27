@@ -11,7 +11,7 @@ class InlinePicker extends React.Component {
     this.state = {
       data: cityData,
       selectedValues: [{ id: 2 }, { id: 38 }],
-      cascade: false,
+      cascade: true,
     };
   }
 

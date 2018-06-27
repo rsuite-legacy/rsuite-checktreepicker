@@ -45,67 +45,67 @@ type Placement =
   | 'autoHorizontalBottom';
 
 type Props = {
-  className?: string,
-  menuClassName?: string,
-  toggleComponentClass?: React.ElementType,
-  container?: HTMLElement | (() => HTMLElement),
-  containerPadding?: number,
+  data: Array<any>,
+  open?: boolean,
   block?: boolean,
   style?: object,
-  height?: number,
-  data: Array<any>,
-  defaultValue?: Array<any>,
   value?: Array<any>,
-  disabledItemValues?: Array<any>,
-  // 禁用 checkbox 数组
-  disabledCheckboxValues: Array<any>,
+  height?: number,
+  inline?: boolean,
+  locale: Object,
+  cascade: boolean,
+  disabled?: boolean,
   valueKey?: string,
   labelKey?: string,
-  childrenKey?: string,
-  cascade: boolean,
-  defaultExpandAll?: boolean,
-  inline?: boolean,
-  classPrefix?: string,
-  disabled?: boolean,
-  open?: boolean,
-  defaultOpen?: boolean,
-  locale: Object,
-  placeholder?: React.Node,
+  container?: HTMLElement | (() => HTMLElement),
+  className?: string,
   cleanable?: boolean,
+  placement?: Placement,
   searchable?: boolean,
-  onSearch?: (searchKeyword: string, event: DefaultEvent) => void,
+  classPrefix?: string,
+  defaultOpen?: boolean,
+  childrenKey?: string,
+  placeholder?: React.Node,
+  defaultValue?: Array<any>,
+  menuClassName?: string,
+  defaultExpandAll?: boolean,
+  containerPadding?: number,
+  disabledItemValues?: Array<any>,
+  toggleComponentClass?: React.ElementType,
+  // 禁用 checkbox 数组
+  disabledCheckboxValues: Array<any>,
   onOpen?: () => void,
+  onExit?: Function,
+  onEnter?: Function,
   onClose?: () => void,
+  onSearch?: (searchKeyword: string, event: DefaultEvent) => void,
   onChange?: (values: any) => void,
   onExpand?: (activeNode: any, labyer: number) => void,
   onSelect?: (activeNode: any, layer: number, values: any) => void,
   onScroll?: (event: DefaultEvent) => void,
-  onEnter?: Function,
-  onEntering?: Function,
-  onEntered?: Function,
-  onExit?: Function,
-  onExiting?: Function,
   onExited?: Function,
-  renderTreeNode?: (nodeData: Object) => React.Node,
-  renderTreeIcon?: (nodeData: Object) => React.Node,
+  onEntered?: Function,
+  onExiting?: Function,
+  onEntering?: Function,
+  renderMenu?: (menu: string | React.Node) => React.Node,
   renderValue?: (
     values: Array<any>,
     checkItems: Array<any>,
     placeholder: string | React.Node,
   ) => React.Node,
-  renderMenu?: (menu: string | React.Node) => React.Node,
+  renderTreeNode?: (nodeData: Object) => React.Node,
+  renderTreeIcon?: (nodeData: Object) => React.Node,
   renderExtraFooter?: () => React.Node,
-  placement?: Placement,
 };
 
 type State = {
+  data: Array<any>,
+  hasValue: boolean,
   activeNode?: ?Object,
+  searchKeyword: string,
   formattedNodes: Array<any>,
   selectedValues: Array<any>,
-  searchKeyword: string,
-  data: Array<any>,
   isSomeNodeHasChildren: boolean,
-  hasValue: boolean,
 };
 
 class Dropdown extends React.Component<Props, State> {
@@ -297,9 +297,11 @@ class Dropdown extends React.Component<Props, State> {
   getFormattedNodes(nodes: Array<any>) {
     return nodes.map((node: Object) => {
       const formatted = { ...node };
-      formatted.check = this.nodes[node.refKey].check;
-      formatted.expand = this.nodes[node.refKey].expand;
-      formatted.disabledCheckbox = this.nodes[node.refKey].disabledCheckbox;
+      const curNode = this.nodes[node.refKey];
+      formatted.check = curNode.check;
+      formatted.expand = curNode.expand;
+      formatted.disabledCheckbox = curNode.disabledCheckbox;
+      formatted.parentNode = curNode.parentNode;
       if (Array.isArray(node.children) && node.children.length > 0) {
         formatted.children = this.getFormattedNodes(formatted.children);
       }
@@ -491,6 +493,7 @@ class Dropdown extends React.Component<Props, State> {
         [valueKey]: node[valueKey],
         expand: this.getExpandState(node),
         disabledCheckbox: this.getDisabledCheckboxState(node),
+        refKey,
       };
       if (parentNode) {
         this.nodes[refKey].parentNode = parentNode;
@@ -573,6 +576,48 @@ class Dropdown extends React.Component<Props, State> {
     }
   }
 
+  everyChildChecked(node: Object) {
+    const list = [];
+    Object.keys(this.nodes).filter((refKey: string) => {
+      const curNode = this.nodes[refKey];
+      if (curNode.parentNode && curNode.parentNode.refKey === node.refKey) {
+        list.push(curNode);
+      }
+    });
+
+    return list.every(l => l.check);
+  }
+
+  someChildChecked(node: Object) {
+    const list = [];
+    Object.keys(this.nodes).filter((refKey: string) => {
+      const curNode = this.nodes[refKey];
+      if (curNode.parentNode && curNode.parentNode.refKey === node.refKey) {
+        list.push(curNode);
+      }
+    });
+
+    return list.some(l => l.check);
+  }
+  calcParentNodeChecked(node: Object, checked: boolean) {
+    const { cascade } = this.props;
+
+    if (cascade) {
+      if (!checked) {
+        this.nodes[node.refKey].check = checked;
+      } else {
+        if (this.everyChildChecked(node)) {
+          this.nodes[node.refKey].check = checked;
+        } else {
+          this.nodes[node.refKey].check = false;
+        }
+      }
+      if (node.parentNode) {
+        this.calcParentNodeChecked(node.parentNode, checked);
+      }
+    }
+  }
+
   toggleChecked(node: Object, isChecked: boolean, cascade: boolean) {
     const { childrenKey } = this.props;
     if (!node[childrenKey] || !node[childrenKey].length || !cascade) {
@@ -606,12 +651,8 @@ class Dropdown extends React.Component<Props, State> {
   handleSelect = (activeNode: Object, layer: number) => {
     const { onChange, onSelect, cascade } = this.props;
     this.toggleChecked(activeNode, activeNode.check, cascade);
-    // const formattedNodes = this.getFormattedNodes(data);
-
-    // if (cascade) {
-    //   this.setCheckState(formattedNodes);
-    // }
-
+    activeNode.parentNode &&
+      this.calcParentNodeChecked(activeNode.parentNode, activeNode.check);
     const selectedValues = this.serializeList('check');
 
     if (this.isControlled) {
@@ -729,6 +770,16 @@ class Dropdown extends React.Component<Props, State> {
     onChange && onChange([]);
   };
 
+  handleOnOpen = () => {
+    const { onOpen } = this.props;
+    onOpen && onOpen();
+  };
+
+  handleOnClose = () => {
+    const { onClose } = this.props;
+    onClose && onClose();
+  };
+
   renderDropdownMenu() {
     const {
       locale,
@@ -757,16 +808,6 @@ class Dropdown extends React.Component<Props, State> {
       </MenuWrapper>
     );
   }
-
-  handleOnOpen = () => {
-    const { onOpen } = this.props;
-    onOpen && onOpen();
-  };
-
-  handleOnClose = () => {
-    const { onClose } = this.props;
-    onClose && onClose();
-  };
 
   renderNode(node: Object, index: number, layer: number, classPrefix: string) {
     const { activeNode } = this.state;
@@ -807,6 +848,7 @@ class Dropdown extends React.Component<Props, State> {
       checkState,
       visible: node.visible,
       defaultExpandAll,
+      parentNode: node.parentNode,
     };
 
     if (props.hasChildren) {
@@ -869,10 +911,6 @@ class Dropdown extends React.Component<Props, State> {
     const formattedNodes = this.state.formattedNodes.length
       ? this.state.formattedNodes
       : this.getFormattedNodes(data);
-
-    // if (cascade) {
-    //   this.setCheckState(formattedNodes);
-    // }
 
     const nodes = formattedNodes.map((node, index) =>
       this.renderNode(node, index, layer, treeViewClass),

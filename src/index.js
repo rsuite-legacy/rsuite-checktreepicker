@@ -1,4 +1,4 @@
-import Dropdown from './Dropdown';
+import CheckTree from './Tree';
 
-export default Dropdown;
+export default CheckTree;
 
