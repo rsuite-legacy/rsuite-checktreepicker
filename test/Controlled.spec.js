@@ -5,8 +5,9 @@ import CheckTree from '../src/index';
 import treeData from '../docs/data/treeData';
 import {
   delay,
-  treeNodeCheckedCls,
+  treeNodeCls,
   placeholderClass,
+  treeNodeCheckedCls,
   customToggleClass,
 } from './utils';
 
@@ -24,6 +25,7 @@ const setup = () => {
     inline: true,
     height: 400,
     value: ['Maya'],
+    searchKeyword: '',
     onExpand: mockOnExpand,
     onSelect: mockOnSelect,
     onChange: mockOnChange,
@@ -67,6 +69,22 @@ describe('ChectTree test suite', () => {
     });
     await delay(500);
     expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
+  });
+
+  it('when searchKeyword changed, tree nodes should be changed', async () => {
+    fullRender.setProps({
+      searchKeyword: 'Kenya',
+    });
+
+    await delay(500);
+    expect(fullRender.find(`.${treeNodeCls}`).length).toBe(2);
+
+    fullRender.setProps({
+      searchKeyword: '',
+    });
+
+    await delay(500);
+    expect(fullRender.find(`.${treeNodeCls}`).length).toBe(31);
   });
 
   it('when value does not in data, Placeholder shoube `Please Select`', () => {

@@ -67,6 +67,7 @@ type Props = {
   childrenKey?: string,
   placeholder?: React.Node,
   defaultValue?: Array<any>,
+  searchKeyword?: string,
   menuClassName?: string,
   defaultExpandAll?: boolean,
   containerPadding?: number,
@@ -108,23 +109,24 @@ type State = {
   isSomeNodeHasChildren: boolean,
 };
 
-class Dropdown extends React.Component<Props, State> {
+class CheckTree extends React.Component<Props, State> {
   static defaultProps = {
-    classPrefix: `${namespace}-checktree`,
-    inline: false,
-    cascade: true,
     value: [],
-    disabled: false,
-    disabledItemValues: [],
-    disabledCheckboxValues: [],
+    inline: false,
     expand: false,
     locale: defaultLocale,
-    cleanable: true,
-    searchable: true,
+    cascade: true,
+    disabled: false,
     valueKey: 'value',
     labelKey: 'label',
-    childrenKey: 'children',
+    cleanable: true,
     placement: 'bottomLeft',
+    searchable: true,
+    classPrefix: `${namespace}-checktree`,
+    childrenKey: 'children',
+    searchKeyword: '',
+    disabledItemValues: [],
+    disabledCheckboxValues: [],
   };
   constructor(props: Props) {
     super(props);
@@ -133,13 +135,12 @@ class Dropdown extends React.Component<Props, State> {
       'value' in props && 'onChange' in props && props.onChange;
 
     const nextValue = this.getValue(props);
-    // this.flattenNodes(data, props);
 
     this.state = {
       formattedNodes: [],
       data: [],
       selectedValues: nextValue,
-      searchKeyword: '',
+      searchKeyword: props.searchKeyword,
       activeNode: null,
       isSomeNodeHasChildren: this.isSomeNodeHasChildren(props.data),
       hasValue: true,
@@ -147,6 +148,7 @@ class Dropdown extends React.Component<Props, State> {
   }
 
   componentWillMount() {
+    const { searchKeyword } = this.state;
     const { data } = this.props;
     const nextValue = this.getValue(this.props);
     this.flattenNodes(data);
@@ -154,13 +156,13 @@ class Dropdown extends React.Component<Props, State> {
       check: nextValue,
     });
     this.setState({
-      data: this.getFilterData('', data),
+      data: this.getFilterData(searchKeyword, data),
       hasValue: this.hasValue(),
     });
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    const { searchKeyword, selectedValues } = this.state;
+    const { searchKeyword, selectedValues, activeNode } = this.state;
     const { value, data, cascade } = nextProps;
     if (!shallowEqualArray(this.props.data, data)) {
       this.flattenNodes(nextProps.data);
@@ -174,7 +176,6 @@ class Dropdown extends React.Component<Props, State> {
       });
     }
     if (!shallowEqualArray(value, this.props.value)) {
-      this.flattenNodes(nextProps.data);
       this.unserializeLists({
         check: nextProps.value,
       });
@@ -185,7 +186,7 @@ class Dropdown extends React.Component<Props, State> {
     }
 
     // cascade 改变时，重新初始化
-    if (!shallowEqual(cascade, this.props.cascade) && cascade) {
+    if (cascade !== this.props.cascade && cascade) {
       this.flattenNodes(data);
       this.unserializeLists(
         {
@@ -193,6 +194,13 @@ class Dropdown extends React.Component<Props, State> {
         },
         nextProps,
       );
+    }
+
+    if (nextProps.searchKeyword !== this.props.searchKeyword) {
+      this.setState({
+        data: this.getFilterData(nextProps.searchKeyword, data),
+        searchKeyword: nextProps.searchKeyword,
+      });
     }
   }
 
@@ -599,7 +607,7 @@ class Dropdown extends React.Component<Props, State> {
 
     return list.some(l => l.check);
   }
-  calcParentNodeChecked(node: Object, checked: boolean) {
+  toggleParentNodeChecked(node: Object, checked: boolean) {
     const { cascade } = this.props;
 
     if (cascade) {
@@ -613,7 +621,7 @@ class Dropdown extends React.Component<Props, State> {
         }
       }
       if (node.parentNode) {
-        this.calcParentNodeChecked(node.parentNode, checked);
+        this.toggleParentNodeChecked(node.parentNode, checked);
       }
     }
   }
@@ -652,29 +660,24 @@ class Dropdown extends React.Component<Props, State> {
     const { onChange, onSelect, cascade } = this.props;
     this.toggleChecked(activeNode, activeNode.check, cascade);
     activeNode.parentNode &&
-      this.calcParentNodeChecked(activeNode.parentNode, activeNode.check);
+      this.toggleParentNodeChecked(activeNode.parentNode, activeNode.check);
     const selectedValues = this.serializeList('check');
-
+    let nextState = {};
     if (this.isControlled) {
-      this.setState({
+      nextState = {
         activeNode,
-      });
-      onChange && onChange(selectedValues);
-      onSelect && onSelect(activeNode, layer, selectedValues);
+      };
     } else {
-      this.setState(
-        {
-          activeNode,
-          // formattedNodes,
-          selectedValues,
-          hasValue: true,
-        },
-        () => {
-          onChange && onChange(selectedValues);
-          onSelect && onSelect(activeNode, layer, selectedValues);
-        },
-      );
+      nextState = {
+        activeNode,
+        selectedValues,
+        hasValue: true,
+      };
     }
+
+    this.setState(nextState);
+    onChange && onChange(selectedValues);
+    onSelect && onSelect(activeNode, layer, selectedValues);
   };
 
   /**
@@ -762,6 +765,7 @@ class Dropdown extends React.Component<Props, State> {
     this.setState({
       selectedValues: [],
       hasValue: false,
+      activeNode: {},
     });
     this.unserializeLists({
       check: [],
@@ -1000,7 +1004,7 @@ class Dropdown extends React.Component<Props, State> {
         placeholderText,
       );
     }
-    const unhandled = getUnhandledProps(Dropdown, rest);
+    const unhandled = getUnhandledProps(CheckTree, rest);
 
     return !inline ? (
       <IntlProvider locale={locale}>
@@ -1051,4 +1055,4 @@ class Dropdown extends React.Component<Props, State> {
   }
 }
 
-export default Dropdown;
+export default CheckTree;

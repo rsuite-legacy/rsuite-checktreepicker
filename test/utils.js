@@ -9,6 +9,7 @@ const { namespace } = constants; // .rs-picker
 export const classPrefix = `${namespace}-checktree`;
 export const treeViewCls = `${classPrefix}-view`;
 export const treeNodeCheckedCls = `${treeViewCls}-node-checked`;
+export const treeNodeCls = `${treeViewCls}-node`;
 export const nodeChildrenOpenCls = `${treeViewCls}-open`;
 export const expandIconWrapperCls = `${treeViewCls}-node-expand-icon-wrapper`;
 export const expandIconCls = `${treeViewCls}-node-expand-icon`;

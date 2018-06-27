@@ -29,11 +29,18 @@ class SimplePicker extends React.Component {
     return menu;
   }
 
+  handleClean = () => {
+    this.setState({
+      selectedValues: []
+    });
+  }
+
 
   render() {
     const { data, selectedValues } = this.state;
     return (
       <div className="example-item">
+      <button onClick={this.handleClean}>clear</button>
         <Picker
           defaultExpandAll
           block
