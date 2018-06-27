@@ -124,7 +124,7 @@ class CheckTree extends React.Component<Props, State> {
     cleanable: true,
     placement: 'bottomLeft',
     searchable: true,
-    classPrefix: `${namespace}-checktree`,
+    classPrefix: 'rs-picker-checktree',
     childrenKey: 'children',
     searchKeyword: '',
     disabledItemValues: [],
@@ -179,13 +179,18 @@ class CheckTree extends React.Component<Props, State> {
       });
     }
     if (!shallowEqualArray(value, this.props.value)) {
+      const nextState = {
+        selectedValues: value,
+        hasValue: this.hasValue(value),
+      };
+
+      if (!value.length) {
+        nextState.activeNode = null;
+      }
       this.unserializeLists({
         check: nextProps.value,
       });
-      this.setState({
-        selectedValues: value,
-        hasValue: this.hasValue(value),
-      });
+      this.setState(nextState);
     }
 
     // cascade 改变时，重新初始化
@@ -711,8 +716,9 @@ class CheckTree extends React.Component<Props, State> {
     }
 
     if (
-      event.target.className === `${namespace}-toggle` ||
-      event.target.className === `${namespace}-search-bar-input`
+      event.target.className.includes(`${namespace}-toggle`) ||
+      event.target.className.includes(`${namespace}-toggle-custom`) ||
+      event.target.className.includes(`${namespace}-search-bar-input`)
     ) {
       switch (event.keyCode) {
         // down
@@ -753,7 +759,15 @@ class CheckTree extends React.Component<Props, State> {
   };
 
   handleOnOpen = () => {
+    const { activeNode } = this.state;
     const { onOpen } = this.props;
+    if (activeNode) {
+      const node = this.getElementByDataKey(activeNode.refKey);
+      if (node !== null) {
+        node.focus();
+      }
+    }
+
     onOpen && onOpen();
   };
 
