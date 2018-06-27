@@ -60,6 +60,7 @@ type Props = {
   container?: HTMLElement | (() => HTMLElement),
   className?: string,
   cleanable?: boolean,
+  expandAll?: boolean,
   placement?: Placement,
   searchable?: boolean,
   classPrefix?: string,
@@ -102,8 +103,9 @@ type Props = {
 type State = {
   data: Array<any>,
   hasValue: boolean,
+  expandAll?: boolean,
   activeNode?: ?Object,
-  searchKeyword: string,
+  searchKeyword?: string,
   formattedNodes: Array<any>,
   selectedValues: Array<any>,
   isSomeNodeHasChildren: boolean,
@@ -135,15 +137,16 @@ class CheckTree extends React.Component<Props, State> {
       'value' in props && 'onChange' in props && props.onChange;
 
     const nextValue = this.getValue(props);
-
+    const expandAll =
+      props.expandAll !== undefined ? props.expandAll : props.defaultExpandAll;
     this.state = {
-      formattedNodes: [],
       data: [],
-      selectedValues: nextValue,
-      searchKeyword: props.searchKeyword,
-      activeNode: null,
-      isSomeNodeHasChildren: this.isSomeNodeHasChildren(props.data),
       hasValue: true,
+      expandAll,
+      searchKeyword: props.searchKeyword,
+      selectedValues: nextValue,
+      formattedNodes: [],
+      isSomeNodeHasChildren: this.isSomeNodeHasChildren(props.data),
     };
   }
 
@@ -162,8 +165,8 @@ class CheckTree extends React.Component<Props, State> {
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    const { searchKeyword, selectedValues, activeNode } = this.state;
-    const { value, data, cascade } = nextProps;
+    const { searchKeyword, selectedValues } = this.state;
+    const { value, data, cascade, expandAll } = nextProps;
     if (!shallowEqualArray(this.props.data, data)) {
       this.flattenNodes(nextProps.data);
       this.unserializeLists({
@@ -202,6 +205,12 @@ class CheckTree extends React.Component<Props, State> {
         searchKeyword: nextProps.searchKeyword,
       });
     }
+
+    if (expandAll !== this.props.expandAll) {
+      this.setState({
+        expandAll,
+      });
+    }
   }
 
   getValue(props: Props) {
@@ -233,11 +242,12 @@ class CheckTree extends React.Component<Props, State> {
   }
 
   getExpandState(node: Object) {
-    const { childrenKey, defaultExpandAll } = this.props;
+    const { expandAll } = this.state;
+    const { childrenKey } = this.props;
     if (node[childrenKey] && node[childrenKey].length) {
       if ('expand' in node) {
         return !!node.expand;
-      } else if (defaultExpandAll) {
+      } else if (expandAll) {
         return true;
       }
       return false;
@@ -291,17 +301,6 @@ class CheckTree extends React.Component<Props, State> {
     return null;
   };
 
-  setChildCheckState(parentNode: Object) {
-    Object.keys(this.nodes).forEach((refKey: string) => {
-      const node = this.nodes[refKey];
-      if (
-        'parentNode' in node &&
-        shallowEqual(node.parentNode.value, parentNode.value)
-      ) {
-        this.nodes[refKey].check = true;
-      }
-    });
-  }
   getFormattedNodes(nodes: Array<any>) {
     return nodes.map((node: Object) => {
       const formatted = { ...node };
@@ -314,27 +313,6 @@ class CheckTree extends React.Component<Props, State> {
         formatted.children = this.getFormattedNodes(formatted.children);
       }
       return formatted;
-    });
-  }
-
-  setCheckState(nodes: Array<any>) {
-    const { cascade } = this.props;
-    nodes.forEach((node: Object) => {
-      if (Array.isArray(node.children) && node.children.length > 0) {
-        this.setCheckState(node.children);
-      }
-      const checkState = this.getNodeCheckState(node, cascade);
-      let isChecked = false;
-      if (
-        checkState === CHECK_STATE.UNCHECK ||
-        checkState === CHECK_STATE.HALFCHECK
-      ) {
-        isChecked = false;
-      }
-      if (checkState === CHECK_STATE.CHECK) {
-        isChecked = true;
-      }
-      this.toggleNode('check', node, isChecked);
     });
   }
 
@@ -814,9 +792,8 @@ class CheckTree extends React.Component<Props, State> {
   }
 
   renderNode(node: Object, index: number, layer: number, classPrefix: string) {
-    const { activeNode } = this.state;
+    const { activeNode, expandAll } = this.state;
     const {
-      defaultExpandAll,
       valueKey,
       labelKey,
       childrenKey,
@@ -851,7 +828,7 @@ class CheckTree extends React.Component<Props, State> {
       layer,
       checkState,
       visible: node.visible,
-      defaultExpandAll,
+      expandAll,
       parentNode: node.parentNode,
     };
 
@@ -860,8 +837,12 @@ class CheckTree extends React.Component<Props, State> {
 
       // 是否展开树节点且子节点不为空
       const openClass = `${classPrefix}-open`;
+      const expandControlled = 'expandAll' in this.props;
+      const expandALlState = expandControlled
+        ? expandAll
+        : expandAll || node.expand;
       let childrenClass = classNames(`${classPrefix}-node-children`, {
-        [openClass]: (defaultExpandAll || node.expand) && hasNotEmptyChildren,
+        [openClass]: expandALlState && hasNotEmptyChildren,
       });
 
       let nodes = children || [];

@@ -9,6 +9,7 @@ import {
   placeholderClass,
   treeNodeCheckedCls,
   customToggleClass,
+  nodeChildrenOpenCls
 } from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -19,7 +20,7 @@ const mockOnChange = jest.fn().mockImplementation(values => values);
 
 const setup = () => {
   const props = {
-    defaultExpandAll: true,
+    expandAll: true,
     cascade: true,
     data: treeData,
     inline: true,
@@ -85,6 +86,22 @@ describe('ChectTree test suite', () => {
 
     await delay(500);
     expect(fullRender.find(`.${treeNodeCls}`).length).toBe(31);
+  });
+
+  it('when expandAll changed, tree expand should be changed', async () => {
+    fullRender.setProps({
+      expandAll: false,
+    });
+
+    await delay(500);
+    expect(fullRender.find(`.${nodeChildrenOpenCls}`).length).toBe(0);
+
+    fullRender.setProps({
+      expandAll: true,
+    });
+
+    await delay(500);
+    expect(fullRender.find(`.${nodeChildrenOpenCls}`).length).toBe(14);
   });
 
   it('when value does not in data, Placeholder shoube `Please Select`', () => {

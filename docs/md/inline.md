@@ -12,7 +12,8 @@ class InlinePicker extends React.Component {
       data: cityData,
       selectedValues: [{ id: 2 }, { id: 38 }],
       cascade: true,
-      word: '福'
+      word: '福',
+      expandAll: true,
     };
   }
 
@@ -22,10 +23,10 @@ class InlinePicker extends React.Component {
     });
   };
 
-  handleToggle = () => {
+  handleToggleExpand = () => {
     this.setState(prev => {
       return {
-        cascade: !prev.cascade,
+        expandAll: !prev.expandAll,
       };
     });
   };
@@ -38,16 +39,18 @@ class InlinePicker extends React.Component {
   }
 
   render() {
-    const { data, selectedValues, cascade, word } = this.state;
+    const { data, selectedValues, cascade, word, expandAll } = this.state;
     return (
       <div className="">
+        <button onClick={this.handleToggleExpand}>toggle expandAll</button>
+        <br/>
         <input type="text" value={word} onChange={this.handleSearch}/>
         <Picker
-          defaultExpandAll
           inline
           height={320}
           data={data}
           cascade={cascade}
+          expandAll={expandAll}
           searchKeyword={word}
           defaultValue={selectedValues}
           onSelect={(activeNode, layer) => {
