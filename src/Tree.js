@@ -654,7 +654,7 @@ class CheckTree extends React.Component<Props, State> {
       nextState = {
         activeNode,
         selectedValues,
-        hasValue: true,
+        hasValue: !!selectedValues.length,
       };
     }
 
