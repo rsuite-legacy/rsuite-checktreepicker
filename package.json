@@ -52,11 +52,10 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "dom-lib": "^1.0.0",
-    "lodash": "^4.17.4",
-    "rsuite-intl": "^1.0.1"
+    "lodash": "^4.17.4"
   },
   "peerDependencies": {
-    "rsuite-utils": ">=1.0.0",
+    "rsuite-utils": "^1.2.3",
     "react": "^0.14.9 || >=15.3.0",
     "react-dom": "^0.14.9 || >=15.3.0"
   },
@@ -117,7 +116,7 @@
     "rsuite-affix": "^1.0.3",
     "rsuite-docs": "^0.1.11",
     "rsuite-theme": "^2.0.10",
-    "rsuite-utils": "^1.2.0",
+    "rsuite-utils": "^1.2.3",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.8",
     "uuid": "^2.0.3",

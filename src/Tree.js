@@ -4,7 +4,6 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { toggleClass, hasClass } from 'dom-lib';
 import { findDOMNode } from 'react-dom';
-import { IntlProvider, FormattedMessage } from 'rsuite-intl';
 import OverlayTrigger from 'rsuite-utils/lib/Overlay/OverlayTrigger';
 import _ from 'lodash';
 import {
@@ -14,6 +13,7 @@ import {
   createChainedFunction,
   shallowEqual,
   shallowEqualArray,
+  tplTransform
 } from 'rsuite-utils/lib/utils';
 
 import {
@@ -975,7 +975,8 @@ class CheckTree extends React.Component<Props, State> {
 
     let placeholderText = placeholder;
     if (hasValue && selectedValues.length) {
-      placeholderText = `${selectedValues.length} selected`;
+      placeholderText = tplTransform(locale.selectedValues, selectedValues.length);
+      // placeholderText = `${selectedValues.length} selected`;
     }
     if (renderValue && hasValue) {
       const checkItems = [];
@@ -998,7 +999,6 @@ class CheckTree extends React.Component<Props, State> {
     const unhandled = getUnhandledProps(CheckTree, rest);
 
     return !inline ? (
-      <IntlProvider locale={locale}>
         <div
           onKeyDown={this.handleToggleKeyDown}
           className={classes}
@@ -1035,11 +1035,10 @@ class CheckTree extends React.Component<Props, State> {
               cleanable={cleanable && !disabled}
               hasValue={hasValue}
             >
-              {placeholderText || <FormattedMessage id="placeholder" />}
+              {placeholderText || locale.placeholder}
             </Toggle>
           </OverlayTrigger>
         </div>
-      </IntlProvider>
     ) : (
       this.renderCheckTree()
     );
