@@ -6,10 +6,10 @@ import treeData from '../docs/data/treeData';
 import {
   delay,
   treeNodeCls,
-  placeholderClass,
   treeNodeCheckedCls,
   customToggleClass,
-  nodeChildrenOpenCls
+  nodeChildrenOpenCls,
+  toggleClass
 } from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -111,7 +111,7 @@ describe('ChectTree test suite', () => {
       value: ['errorValue'],
     };
     const text = render(<CheckTree {...newProps} />)
-      .find(`${placeholderClass} > span`)
+      .find(`${toggleClass} > span`)
       .text();
     expect(text).toBe('Please Select');
   });

@@ -36,7 +36,7 @@ describe('rsutie-checktrepicker test suite', () => {
   });
 
   it('Picker placeholder text should be Please Select', () => {
-    const text = staticRender.find(`${placeholderClass} > span`).text();
+    const text = staticRender.find(`${toggleClass} > span`).text();
     expect(text).toBe('Please Select');
   });
 
