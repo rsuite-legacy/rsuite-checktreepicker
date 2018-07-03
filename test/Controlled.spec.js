@@ -53,10 +53,11 @@ describe('ChectTree test suite', () => {
 
   // test select node`
   it('test controlled tree', async () => {
+    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
     let values = [];
     fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
     values = mockOnChange.mock.calls[0];
-    fullRender.setState({
+    fullRender.setProps({
       value: values,
     });
 
@@ -64,8 +65,8 @@ describe('ChectTree test suite', () => {
     expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(0);
 
     fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
-    values = mockOnChange.mock.calls[1];
-    fullRender.setState({
+    values = mockOnChange.mock.calls[1][0];
+    fullRender.setProps({
       value: values,
     });
     await delay(500);
