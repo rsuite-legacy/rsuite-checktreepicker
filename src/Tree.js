@@ -13,7 +13,7 @@ import {
   createChainedFunction,
   shallowEqual,
   shallowEqualArray,
-  tplTransform
+  tplTransform,
 } from 'rsuite-utils/lib/utils';
 
 import {
@@ -133,8 +133,7 @@ class CheckTree extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.nodes = {};
-    this.isControlled =
-      'value' in props;
+    this.isControlled = 'value' in props;
 
     const nextValue = this.getValue(props);
     const expandAll =
@@ -182,7 +181,7 @@ class CheckTree extends React.Component<Props, State> {
       const nextState = {
         selectedValues: value,
         hasValue: this.hasValue(value),
-        activeNode: this.activeNode
+        activeNode: this.activeNode,
       };
 
       if (!value.length) {
@@ -443,8 +442,9 @@ class CheckTree extends React.Component<Props, State> {
   }
 
   isEveryChildChecked(node: Object) {
-    return node.children.every((child: Object) => {
-      if (child.children) {
+    const { childrenKey } = this.props;
+    return node[childrenKey].every((child: Object) => {
+      if (child[childrenKey] && child[childrenKey].length) {
         return this.isEveryChildChecked(child);
       }
       return child.check;
@@ -452,8 +452,9 @@ class CheckTree extends React.Component<Props, State> {
   }
 
   isSomeChildChecked(node: Object) {
-    return node.children.some((child: Object) => {
-      if (child.children) {
+    const { childrenKey } = this.props;
+    return node[childrenKey].some((child: Object) => {
+      if (child[childrenKey] && child[childrenKey].length) {
         return this.isSomeChildChecked(child);
       }
 
@@ -653,7 +654,6 @@ class CheckTree extends React.Component<Props, State> {
         hasValue: !!selectedValues.length,
       });
     }
-
 
     onChange && onChange(selectedValues);
     onSelect && onSelect(activeNode, layer, selectedValues);
@@ -975,7 +975,10 @@ class CheckTree extends React.Component<Props, State> {
 
     let placeholderText = placeholder;
     if (hasValue && selectedValues.length) {
-      placeholderText = tplTransform(locale.selectedValues, selectedValues.length);
+      placeholderText = tplTransform(
+        locale.selectedValues,
+        selectedValues.length,
+      );
       // placeholderText = `${selectedValues.length} selected`;
     }
     if (renderValue && hasValue) {
@@ -999,46 +1002,46 @@ class CheckTree extends React.Component<Props, State> {
     const unhandled = getUnhandledProps(CheckTree, rest);
 
     return !inline ? (
-        <div
-          onKeyDown={this.handleToggleKeyDown}
-          className={classes}
-          style={style}
-          tabIndex={-1}
-          role="menu"
+      <div
+        onKeyDown={this.handleToggleKeyDown}
+        className={classes}
+        style={style}
+        tabIndex={-1}
+        role="menu"
+        ref={ref => {
+          this.container = ref;
+        }}
+      >
+        <OverlayTrigger
           ref={ref => {
-            this.container = ref;
+            this.trigger = ref;
           }}
+          open={open}
+          defaultOpen={defaultOpen}
+          disabled={disabled}
+          trigger="click"
+          placement={placement}
+          onEnter={onEnter}
+          onEntering={onEntering}
+          onEntered={createChainedFunction(this.handleOnOpen, onEntered)}
+          onExit={onExit}
+          onExiting={onExiting}
+          onExited={createChainedFunction(this.handleOnClose, onExited)}
+          container={container}
+          containerPadding={containerPadding}
+          speaker={this.renderDropdownMenu()}
         >
-          <OverlayTrigger
-            ref={ref => {
-              this.trigger = ref;
-            }}
-            open={open}
-            defaultOpen={defaultOpen}
-            disabled={disabled}
-            trigger="click"
-            placement={placement}
-            onEnter={onEnter}
-            onEntering={onEntering}
-            onEntered={createChainedFunction(this.handleOnOpen, onEntered)}
-            onExit={onExit}
-            onExiting={onExiting}
-            onExited={createChainedFunction(this.handleOnClose, onExited)}
-            container={container}
-            containerPadding={containerPadding}
-            speaker={this.renderDropdownMenu()}
+          <Toggle
+            {...unhandled}
+            onClean={this.handleClean}
+            componentClass={toggleComponentClass}
+            cleanable={cleanable && !disabled}
+            hasValue={hasValue}
           >
-            <Toggle
-              {...unhandled}
-              onClean={this.handleClean}
-              componentClass={toggleComponentClass}
-              cleanable={cleanable && !disabled}
-              hasValue={hasValue}
-            >
-              {placeholderText || locale.placeholder}
-            </Toggle>
-          </OverlayTrigger>
-        </div>
+            {placeholderText || locale.placeholder}
+          </Toggle>
+        </OverlayTrigger>
+      </div>
     ) : (
       this.renderCheckTree()
     );
