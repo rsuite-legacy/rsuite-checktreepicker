@@ -6,7 +6,7 @@ class SimplePicker extends React.Component {
     super(props);
     this.state = {
       data: [],
-      selectedValues: ['Dave', 'Maya']
+      selectedValues: ['Dave', 'tester10']
     };
   }
 

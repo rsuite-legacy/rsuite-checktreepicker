@@ -17,6 +17,7 @@ class DisabledPicker extends React.Component {
       <div className="example-item">
         <Picker
           disabledCheckboxValues={['Marty']}
+          disabledItemValues={['disabled']}
           value={selectedValues}
           defaultExpandAll
           height={320}
