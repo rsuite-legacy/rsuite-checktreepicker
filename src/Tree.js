@@ -25,6 +25,7 @@ import {
 import TreeCheckNode from './TreeCheckNode';
 import defaultLocale from './locale/index';
 import { CHECK_STATE } from './constants';
+import { clone } from './utils';
 
 const { namespace } = constants;
 
@@ -113,7 +114,6 @@ type State = {
 
 class CheckTree extends React.Component<Props, State> {
   static defaultProps = {
-    value: [],
     inline: false,
     expand: false,
     locale: defaultLocale,
@@ -134,7 +134,7 @@ class CheckTree extends React.Component<Props, State> {
     super(props);
     this.nodes = {};
     this.isControlled =
-      'value' in props && 'onChange' in props && props.onChange;
+      'value' in props;
 
     const nextValue = this.getValue(props);
     const expandAll =
@@ -182,6 +182,7 @@ class CheckTree extends React.Component<Props, State> {
       const nextState = {
         selectedValues: value,
         hasValue: this.hasValue(value),
+        activeNode: this.activeNode
       };
 
       if (!value.length) {
@@ -266,7 +267,7 @@ class CheckTree extends React.Component<Props, State> {
     props?: Props = this.props,
   ) {
     const { labelKey } = props;
-    const treeData = JSON.parse(JSON.stringify(data));
+    const treeData = clone(data);
     const setVisible = (nodes = []) =>
       nodes.forEach((item: Object) => {
         item.visible = this.shouldDisplay(item[labelKey], searchKeyword);
@@ -493,13 +494,13 @@ class CheckTree extends React.Component<Props, State> {
     });
   }
 
-  serializeList(key: string) {
+  serializeList(key: string, nodes: Object = this.nodes) {
     const { valueKey } = this.props;
     const list = [];
 
-    Object.keys(this.nodes).forEach((refKey: string) => {
-      if (this.nodes[refKey][key]) {
-        list.push(this.nodes[refKey][valueKey]);
+    Object.keys(nodes).forEach((refKey: string) => {
+      if (nodes[refKey][key]) {
+        list.push(nodes[refKey][valueKey]);
       }
     });
     return list;
@@ -528,6 +529,8 @@ class CheckTree extends React.Component<Props, State> {
   isControlled = null;
 
   nodes = {};
+
+  activeNode = null;
 
   treeView = null;
 
@@ -567,10 +570,10 @@ class CheckTree extends React.Component<Props, State> {
     }
   }
 
-  everyChildChecked(node: Object) {
+  everyChildChecked(nodes: Object, node: Object) {
     const list = [];
-    Object.keys(this.nodes).filter((refKey: string) => {
-      const curNode = this.nodes[refKey];
+    Object.keys(nodes).filter((refKey: string) => {
+      const curNode = nodes[refKey];
       if (curNode.parentNode && curNode.parentNode.refKey === node.refKey) {
         list.push(curNode);
       }
@@ -579,44 +582,40 @@ class CheckTree extends React.Component<Props, State> {
     return list.every(l => l.check);
   }
 
-  someChildChecked(node: Object) {
-    const list = [];
-    Object.keys(this.nodes).filter((refKey: string) => {
-      const curNode = this.nodes[refKey];
-      if (curNode.parentNode && curNode.parentNode.refKey === node.refKey) {
-        list.push(curNode);
-      }
-    });
-
-    return list.some(l => l.check);
+  toggleChecked(node: Object, isChecked: boolean) {
+    const nodes = clone(this.nodes);
+    this.toggleDownChecked(nodes, node, isChecked);
+    node.parentNode && this.toggleUpChecked(nodes, node.parentNode, isChecked);
+    return this.serializeList('check', nodes);
   }
-  toggleParentNodeChecked(node: Object, checked: boolean) {
+
+  toggleUpChecked(nodes: Object, node: Object, checked: boolean) {
     const { cascade } = this.props;
 
     if (cascade) {
       if (!checked) {
-        this.nodes[node.refKey].check = checked;
+        nodes[node.refKey].check = checked;
       } else {
-        if (this.everyChildChecked(node)) {
-          this.nodes[node.refKey].check = checked;
+        if (this.everyChildChecked(nodes, node)) {
+          nodes[node.refKey].check = checked;
         } else {
-          this.nodes[node.refKey].check = false;
+          nodes[node.refKey].check = false;
         }
       }
       if (node.parentNode) {
-        this.toggleParentNodeChecked(node.parentNode, checked);
+        this.toggleUpChecked(nodes, node.parentNode, checked);
       }
     }
   }
 
-  toggleChecked(node: Object, isChecked: boolean, cascade: boolean) {
-    const { childrenKey } = this.props;
+  toggleDownChecked(nodes: Object, node: Object, isChecked: boolean) {
+    const { childrenKey, cascade } = this.props;
     if (!node[childrenKey] || !node[childrenKey].length || !cascade) {
-      this.toggleNode('check', node, isChecked);
+      nodes[node.refKey].check = isChecked;
     } else {
-      this.toggleNode('check', node, isChecked);
+      nodes[node.refKey].check = isChecked;
       node.children.forEach((child: Object) => {
-        this.toggleChecked(child, isChecked, cascade);
+        this.toggleDownChecked(nodes, child, isChecked);
       });
     }
   }
@@ -640,25 +639,22 @@ class CheckTree extends React.Component<Props, State> {
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNode: Object, layer: number) => {
-    const { onChange, onSelect, cascade } = this.props;
-    this.toggleChecked(activeNode, activeNode.check, cascade);
-    activeNode.parentNode &&
-      this.toggleParentNodeChecked(activeNode.parentNode, activeNode.check);
-    const selectedValues = this.serializeList('check');
-    let nextState = {};
+    const { onChange, onSelect } = this.props;
+    const selectedValues = this.toggleChecked(activeNode, activeNode.check);
     if (this.isControlled) {
-      nextState = {
-        activeNode,
-      };
+      this.activeNode = activeNode;
     } else {
-      nextState = {
+      this.unserializeLists({
+        check: selectedValues,
+      });
+      this.setState({
         activeNode,
         selectedValues,
         hasValue: !!selectedValues.length,
-      };
+      });
     }
 
-    this.setState(nextState);
+
     onChange && onChange(selectedValues);
     onSelect && onSelect(activeNode, layer, selectedValues);
   };
