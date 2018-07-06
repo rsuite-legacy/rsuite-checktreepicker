@@ -153,12 +153,13 @@ class CheckTree extends React.Component<Props, State> {
     const { searchKeyword } = this.state;
     const { data } = this.props;
     const nextValue = this.getValue(this.props);
-    this.flattenNodes(data);
+    const nextData = clone(data);
+    this.flattenNodes(nextData);
     this.unserializeLists({
       check: nextValue,
     });
     this.setState({
-      data: this.getFilterData(searchKeyword, data),
+      data: this.getFilterData(searchKeyword, nextData),
       hasValue: this.hasValue(),
     });
   }
@@ -166,14 +167,16 @@ class CheckTree extends React.Component<Props, State> {
   componentWillReceiveProps(nextProps: Props) {
     const { searchKeyword, selectedValues } = this.state;
     const { value, data, cascade, expandAll } = nextProps;
+
     if (!shallowEqualArray(this.props.data, data)) {
-      this.flattenNodes(nextProps.data);
+      const nextData = clone(data);
+      this.flattenNodes(nextData);
       this.unserializeLists({
         check: nextProps.value,
       });
       this.setState({
-        data: this.getFilterData(searchKeyword, data),
-        isSomeNodeHasChildren: this.isSomeNodeHasChildren(data),
+        data: this.getFilterData(searchKeyword, nextData),
+        isSomeNodeHasChildren: this.isSomeNodeHasChildren(nextData),
         hasValue: this.hasValue(),
       });
     }
@@ -195,7 +198,7 @@ class CheckTree extends React.Component<Props, State> {
 
     // cascade 改变时，重新初始化
     if (cascade !== this.props.cascade && cascade) {
-      this.flattenNodes(data);
+      this.flattenNodes(this.state.data);
       this.unserializeLists(
         {
           check: selectedValues,
@@ -206,7 +209,7 @@ class CheckTree extends React.Component<Props, State> {
 
     if (nextProps.searchKeyword !== this.props.searchKeyword) {
       this.setState({
-        data: this.getFilterData(nextProps.searchKeyword, data),
+        data: this.getFilterData(nextProps.searchKeyword, this.state.data),
         searchKeyword: nextProps.searchKeyword,
       });
     }
@@ -266,7 +269,6 @@ class CheckTree extends React.Component<Props, State> {
     props?: Props = this.props,
   ) {
     const { labelKey } = props;
-    const treeData = clone(data);
     const setVisible = (nodes = []) =>
       nodes.forEach((item: Object) => {
         item.visible = this.shouldDisplay(item[labelKey], searchKeyword);
@@ -280,8 +282,8 @@ class CheckTree extends React.Component<Props, State> {
         }
       });
 
-    setVisible(treeData);
-    return treeData;
+    setVisible(data);
+    return data;
   }
 
   getActiveElementOption(options: Array<any>, refKey: string) {
@@ -728,7 +730,8 @@ class CheckTree extends React.Component<Props, State> {
   };
 
   handleSearch = (value: string, event: DefaultEvent) => {
-    const { data, onSearch } = this.props;
+    const { data } = this.state;
+    const { onSearch } = this.props;
     this.setState({
       searchKeyword: value,
       data: this.getFilterData(value, data),
