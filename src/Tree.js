@@ -182,7 +182,8 @@ class CheckTree extends React.Component<Props, States> {
     };
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: States) {
+  componentWillReceiveProps(nextProps: Props) {
+    const { filterData, searchKeyword, selectedValues } = this.state;
     const {
       value,
       data,
@@ -190,76 +191,42 @@ class CheckTree extends React.Component<Props, States> {
       expandAll,
       uncheckableItemValues,
     } = nextProps;
-    let nextState = {};
-    if (
-      _.isArray(data) &&
-      _.isArray(prevState.data) &&
-      prevState.data !== data
-    ) {
-      nextState.data = data;
-    }
-    if (
-      _.isArray(value) &&
-      _.isArray(prevState.value) &&
-      !shallowEqualArray(value, prevState.value)
-    ) {
-      nextState.value = value;
-    }
 
-    if (
-      _.isArray(uncheckableItemValues) &&
-      _.isArray(prevState.uncheckableItemValues) &&
-      !shallowEqualArray(uncheckableItemValues, prevState.uncheckableItemValues)
-    ) {
-      nextState.uncheckableItemValues = uncheckableItemValues;
-    }
-
-    if (cascade !== prevState.cascade) {
-      nextState.cascade = cascade;
-    }
-    if (expandAll !== prevState.expandAll) {
-      nextState.expandAll = expandAll;
-    }
-
-    return Object.keys(nextState).length ? nextState : null;
-  }
-
-  componentDidUpdate(prevProps: Props, prevState: States) {
-    const { filterData, searchKeyword, selectedValues } = this.state;
-    const { value, data = [], cascade, uncheckableItemValues } = this.props;
-    if (prevState.data !== data) {
-      const nextData = [...data];
+    if (!shallowEqualArray(this.props.data, data)) {
+      const nextData = clone(data);
       this.flattenNodes(nextData);
       this.unserializeLists({
-        check: this.getValue(),
+        check: nextProps.value,
       });
       this.setState({
-        data: nextData,
+        data,
         filterData: this.getFilterData(searchKeyword, nextData),
         isSomeNodeHasChildren: this.isSomeNodeHasChildren(nextData),
         hasValue: this.hasValue(),
       });
     }
-
-    if (_.isArray(value) && !shallowEqualArray(prevState.value, value)) {
+    if (!shallowEqualArray(value, this.props.value)) {
       const nextState = {
         selectedValues: value,
         hasValue: this.hasValue(value),
         activeNode: this.activeNode,
       };
 
-      if (value && !value.length) {
+      if (!value.length) {
         nextState.activeNode = null;
       }
       this.unserializeLists({
-        check: value,
+        check: nextProps.value,
       });
       this.setState(nextState);
     }
 
     if (
       _.isArray(uncheckableItemValues) &&
-      !shallowEqualArray(prevState.uncheckableItemValues, uncheckableItemValues)
+      !shallowEqualArray(
+        this.props.uncheckableItemValues,
+        uncheckableItemValues,
+      )
     ) {
       this.flattenNodes(filterData);
       this.unserializeLists({
@@ -272,22 +239,26 @@ class CheckTree extends React.Component<Props, States> {
     }
 
     // cascade 改变时，重新初始化
-    if (cascade !== prevState.cascade && cascade) {
-      this.flattenNodes(filterData);
+    if (cascade !== this.props.cascade && cascade) {
+      this.flattenNodes(this.state.data);
       this.unserializeLists(
         {
           check: selectedValues,
         },
-        this.props,
+        nextProps,
       );
+    }
+
+    if (nextProps.searchKeyword !== this.props.searchKeyword) {
       this.setState({
-        cascade,
+        data: this.getFilterData(nextProps.searchKeyword, this.state.data),
+        searchKeyword: nextProps.searchKeyword,
       });
     }
 
-    if (prevProps.searchKeyword !== this.props.searchKeyword) {
+    if (expandAll !== this.props.expandAll) {
       this.setState({
-        filterData: this.getFilterData(this.props.searchKeyword, filterData),
+        expandAll,
       });
     }
   }
