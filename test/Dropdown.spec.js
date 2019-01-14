@@ -37,7 +37,7 @@ describe('rsutie-checktrepicker test suite', () => {
 
   it('Picker placeholder text should be Please Select', () => {
     const text = staticRender.find(`${toggleClass} > span`).text();
-    expect(text).toBe('Please Select');
+    expect(text).toBe('Select');
   });
 
   it('when dropdown clicked, CheckTree Component should be render', () => {
@@ -74,7 +74,7 @@ describe('rsutie-checktrepicker test suite', () => {
     expect(picker.find(disabledClass).length).toBe(1);
   });
 
-  it('when click clean icon, Placeholder should be `Please Select`', () => {
+  it('when click clean icon, Placeholder should be `Select`', () => {
     const props = {
       data: treeData,
       value: ['Master'],
@@ -82,7 +82,10 @@ describe('rsutie-checktrepicker test suite', () => {
     const picker = mount(<Picker {...props} />);
 
     picker.find(`${toggleCleanClass}`).simulate('click');
-    const text = picker.render().find(`${toggleClass} > span`).text();
-    expect(text).toBe('Please Select');
+    const text = picker
+      .render()
+      .find(`${toggleClass} > span`)
+      .text();
+    expect(text).toBe('Select');
   });
 });

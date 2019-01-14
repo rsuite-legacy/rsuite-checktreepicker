@@ -5,11 +5,9 @@ import CheckTree from '../src/index';
 import treeData from '../docs/data/treeData';
 import {
   delay,
-  treeNodeCls,
   treeNodeCheckedCls,
   customToggleClass,
-  nodeChildrenOpenCls,
-  toggleClass
+  toggleClass,
 } from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -51,61 +49,8 @@ describe('ChectTree test suite', () => {
     expect(staticRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
   });
 
-  // test select node`
-  it('test controlled tree', async () => {
-    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
-    let values = [];
-    fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
-    values = mockOnChange.mock.calls[0];
-    fullRender.setProps({
-      value: values,
-    });
 
-    await delay(500);
-    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(0);
-
-    fullRender.find('span[data-key="0-0-1-1"]').simulate('click');
-    values = mockOnChange.mock.calls[1][0];
-    fullRender.setProps({
-      value: values,
-    });
-    await delay(500);
-    expect(fullRender.find(`.${treeNodeCheckedCls}`).length).toBe(12);
-  });
-
-  it('when searchKeyword changed, tree nodes should be changed', async () => {
-    fullRender.setProps({
-      searchKeyword: 'Kenya',
-    });
-
-    await delay(500);
-    expect(fullRender.find(`.${treeNodeCls}`).length).toBe(2);
-
-    fullRender.setProps({
-      searchKeyword: '',
-    });
-
-    await delay(500);
-    expect(fullRender.find(`.${treeNodeCls}`).length).toBe(31);
-  });
-
-  it('when expandAll changed, tree expand should be changed', async () => {
-    fullRender.setProps({
-      expandAll: false,
-    });
-
-    await delay(500);
-    expect(fullRender.find(`.${nodeChildrenOpenCls}`).length).toBe(0);
-
-    fullRender.setProps({
-      expandAll: true,
-    });
-
-    await delay(500);
-    expect(fullRender.find(`.${nodeChildrenOpenCls}`).length).toBe(14);
-  });
-
-  it('when value does not in data, Placeholder shoube `Please Select`', () => {
+  it('when value does not in data, Placeholder shoube `Select`', () => {
     const newProps = {
       data: treeData,
       value: ['errorValue'],
@@ -113,7 +58,7 @@ describe('ChectTree test suite', () => {
     const text = render(<CheckTree {...newProps} />)
       .find(`${toggleClass} > span`)
       .text();
-    expect(text).toBe('Please Select');
+    expect(text).toBe('Select');
   });
 
   it('when `toggleComponentClass` set to `button`, Toggle element type should be `bottuon`', () => {

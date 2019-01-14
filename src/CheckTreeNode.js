@@ -2,12 +2,12 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
-import { prefix, shallowEqual } from 'rsuite-utils/lib/utils';
+import { prefix, reactToString } from 'rsuite-utils/lib/utils';
 import { CHECK_STATE } from './constants';
 
 type CheckState =
   | CHECK_STATE.UNCHECK
-  | CHECK_STATE.HALFCHECK
+  | CHECK_STATE.INDETERMINATE
   | CHECK_STATE.CHECK;
 type DefaultEvent = SyntheticEvent<*>;
 
@@ -20,13 +20,12 @@ type Props = {
   active?: boolean,
   checkState?: CheckState,
   hasChildren?: boolean,
-  labelClickableExpand?: boolean,
   disabled?: boolean,
-  disabledCheckbox: boolean,
+  uncheckable: boolean,
   layer: number,
   onTreeToggle?: (nodeData: Object, layer: number, event: DefaultEvent) => void,
   onSelect?: (nodeData: Object, layer: number, event: DefaultEvent) => void,
-  onRenderTreeIcon?: (nodeData: Object) => React.Node,
+  onRenderTreeIcon?: (nodeData: Object, expandIcon?: React.Node) => React.Node,
   onRenderTreeNode?: (nodeData: Object) => React.Node,
 };
 
@@ -38,58 +37,42 @@ class TreeCheckNode extends React.Component<Props> {
     visible: true,
   };
 
-  shouldComponentUpdate(nextProps: Props) {
-    return !shallowEqual(this.props, nextProps);
-  }
-
-  isEqualRenderTreeIcon(
-    func?: (nodeData: Object) => React.Node,
-    params: Object,
-  ) {
-    const { onRenderTreeIcon, nodeData } = this.props;
-    if (typeof func === 'function' && typeof onRenderTreeIcon === 'function') {
-      return shallowEqual(func(params), onRenderTreeIcon(nodeData));
+  getTitle() {
+    const { label } = this.props;
+    if (typeof label === 'string') {
+      return label;
+    } else if (React.isValidElement(label)) {
+      const nodes = reactToString(label);
+      return nodes.join('');
     }
-    return false;
-  }
-
-  isEqualRenderTreeNode(
-    func?: (nodeData: Object) => React.Node,
-    params: Object,
-  ) {
-    const { onRenderTreeNode, nodeData } = this.props;
-    if (typeof func === 'function' && typeof onRenderTreeNode === 'function') {
-      return shallowEqual(func(params), onRenderTreeNode(nodeData));
-    }
-    return false;
   }
 
   /**
    * 展开收缩节点
    */
   handleTreeToggle = (event: DefaultEvent) => {
-    const { labelClickableExpand, onTreeToggle, layer, nodeData } = this.props;
-    if (labelClickableExpand) {
-      return;
+    const { onTreeToggle, layer, nodeData } = this.props;
+
+    // 异步加载数据自定义loading图标时，阻止原生冒泡，不触发 document.click
+    if (event.nativeEvent && event.nativeEvent.stopImmediatePropagation) {
+      event.nativeEvent.stopImmediatePropagation();
     }
+
     onTreeToggle && onTreeToggle(nodeData, layer, event);
   };
 
   handleSelect = (event: DefaultEvent) => {
     const {
       classPrefix,
-      onTreeToggle,
       onSelect,
-      hasChildren,
-      labelClickableExpand,
       layer,
       disabled,
-      disabledCheckbox,
+      uncheckable,
       nodeData,
       checkState,
     } = this.props;
 
-    if (disabled || disabledCheckbox) {
+    if (disabled || uncheckable) {
       return;
     }
 
@@ -105,15 +88,10 @@ class TreeCheckNode extends React.Component<Props> {
       }
     }
 
-    // 点击title的时候，如果 title 设置为可以点击，同时又拥有子节点，则可以展开数据
-    if (labelClickableExpand && hasChildren) {
-      onTreeToggle && onTreeToggle(nodeData, layer, event);
-    }
-
     let isChecked = false;
     if (
       checkState === CHECK_STATE.UNCHECK ||
-      checkState === CHECK_STATE.HALFCHECK
+      checkState === CHECK_STATE.INDETERMINATE
     ) {
       isChecked = true;
     }
@@ -129,7 +107,13 @@ class TreeCheckNode extends React.Component<Props> {
     const { onRenderTreeIcon, hasChildren, nodeData, classPrefix } = this.props;
     let expandIcon = <i className={`${classPrefix}-node-expand-icon icon`} />;
     if (typeof onRenderTreeIcon === 'function') {
-      expandIcon = onRenderTreeIcon(nodeData);
+      const customIcon = onRenderTreeIcon(nodeData);
+      expandIcon =
+        customIcon !== null ? (
+          <div className={`${classPrefix}-custom-icon`}>{customIcon}</div>
+        ) : (
+          expandIcon
+        );
     }
     return hasChildren ? (
       <div
@@ -152,7 +136,7 @@ class TreeCheckNode extends React.Component<Props> {
       label,
       layer,
       disabled,
-      disabledCheckbox,
+      uncheckable,
     } = this.props;
     const addPrefix = prefix(classPrefix);
     const input = (
@@ -175,12 +159,12 @@ class TreeCheckNode extends React.Component<Props> {
         role="button"
         tabIndex="-1"
         className={addPrefix('checknode-label')}
-        title={label}
+        title={this.getTitle()}
         data-layer={layer}
         data-key={nodeData.refKey}
         onClick={this.handleSelect}
       >
-        {!disabledCheckbox ? input : null}
+        {!uncheckable ? input : null}
         {custom}
       </span>
     );
@@ -193,22 +177,19 @@ class TreeCheckNode extends React.Component<Props> {
       active,
       layer,
       disabled,
-      disabledCheckbox,
       checkState,
     } = this.props;
 
     const addPrefix = prefix(`${classPrefix}-node`);
     const classes = classNames(`${classPrefix}-node`, {
       'text-muted': disabled,
-      [addPrefix('indeterminate')]: checkState === CHECK_STATE.HALFCHECK,
+      [addPrefix('indeterminate')]: checkState === CHECK_STATE.INDETERMINATE,
       [addPrefix('checked')]: checkState === CHECK_STATE.CHECK,
       [addPrefix('disabled')]: disabled,
       [addPrefix('active')]: active,
-      [addPrefix('disabled-checkbox')]: disabledCheckbox,
     });
 
     const styles = { paddingLeft: layer * PADDING + INITIAL_PADDING };
-
     return visible ? (
       <div style={styles} className={classes}>
         {this.renderIcon()}

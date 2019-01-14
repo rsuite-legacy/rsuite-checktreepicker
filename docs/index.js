@@ -69,18 +69,6 @@ class App extends Component {
               />
             </Col>
           </Row>
-          <Row>
-            <Col md={12}>
-              <CodeView
-                source={require('./md/disabled-checkbox.md')}
-                dependencies={{
-                  treeData,
-                  Picker,
-                }}
-                babelTransformOptions={babelOptions}
-              />
-            </Col>
-          </Row>
 
           <Row>
             <Col md={12}>
